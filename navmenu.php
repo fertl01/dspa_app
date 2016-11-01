@@ -10,7 +10,7 @@
     echo '<a href="indexCuentasSINDO.php">Gesti&oacute;n Cuentas SINDO</a> &#10070; ';
 
     //echo '<a href="valindex.php">Cargar Archivo Validador-INFONAVIT</a> &#10070; ';
-    //if ($_SESSION['username'] = 'TOLF781016HDFRGR01') {
+    //if ($_SESSION['username'] = 'TOLF') {
       //echo '<a href="validainfonavit.php">Validador-INFONAVIT</a> &#10070; ';
       //echo '<a href="verarchivosestudiantes.php">Ver Archivos Estudiantes-Enero 2016</a> &#10070; ';
     //}

@@ -20,49 +20,76 @@
   require_once('appvars.php');
   require_once('connectvars.php');
 
-  // Conectarse a la BD
-  $dbc = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+  //FUNCIONES PARA COMBOBOX
+  function fnvalijaSelect( $var_valija )
+  {
+    if ( empty( $_POST['cmbValijas'] ) ) {
+      return "";
+    }
+    else if ( $_POST['cmbValijas'] == $var_valija ) {
+      return "selected";
+    }
+  }
+
+  function fnloteSelect( $var_lote )
+  {
+    if ( empty( $_POST['cmbLotes'] ) ) {
+      return "";
+    }
+    else if ( $_POST['cmbLotes'] == $var_lote ) {
+      return "selected";
+    }
+  }
+
+  function fntipomovimientoSelect( $var_tipomovimiento )
+  {
+    if ( empty( $_POST['cmbtipomovimiento'] ) ) 
+      return 0;    
+    else if ( $_POST['cmbtipomovimiento'] == $var_tipomovimiento )
+      return "selected";
+  }
+
+  function fntdelegacionSelect($var_delegacion)
+  {
+    if (empty($_POST['cmbDelegaciones'])) {
+      return "";
+    }
+    else if ($_POST['cmbDelegaciones'] == $var_delegacion) {
+      return "selected";
+    }
+  }
+
+  function fntsubdelegacionSelect($var_subdelegacion)
+    {
+      if (empty($_POST['cmbSubdelegacionesII'])) {
+        return "";
+      }
+      else if ($_POST['cmbSubdelegacionesII'] == $var_subdelegacion) {
+        return "selected";
+      }
+    }
+
 
   if (isset($_POST['submit'])) {
     // Grab the profile data from the POST
+    // Conectarse a la BD
+    $dbc = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
 
-    $fecha_solicitud_del = mysqli_real_escape_string($dbc, trim($_POST['fecha_solicitud_del']));
+    $cmbLotes = mysqli_real_escape_string( $dbc, trim( $_POST['cmbLotes'] ) );
+    $cmbValijas = mysqli_real_escape_string( $dbc, trim( $_POST['cmbValijas'] ) );
+    $fecha_solicitud_del = mysqli_real_escape_string( $dbc, trim( $_POST['fecha_solicitud_del'] ) );
+    $cmbtipomovimiento = mysqli_real_escape_string( $dbc, trim( $_POST['cmbtipomovimiento'] ) );
+    $cmbDelegaciones = mysqli_real_escape_string( $dbc, trim( $_POST['cmbDelegaciones'] ) );
+    $cmbSubdelegacionesII = mysqli_real_escape_string( $dbc, trim( $_POST['cmbSubdelegacionesII'] ) );
+    
+
+
     $primer_apellido = mysqli_real_escape_string($dbc, strtoupper(trim($_POST['primer_apellido'])));
     $segundo_apellido = mysqli_real_escape_string($dbc, strtoupper(trim($_POST['segundo_apellido'])));
     $nombre = mysqli_real_escape_string($dbc, strtoupper(trim($_POST['nombre'])));
     $matricula = mysqli_real_escape_string($dbc, strtoupper(trim($_POST['matricula'])));
     $curp = mysqli_real_escape_string($dbc, strtoupper(trim($_POST['curp'])));
     $usuario = mysqli_real_escape_string($dbc, strtoupper(trim($_POST['usuario'])));
-    //echo 'del:' . $_POST['cmbDelegaciones'];
-    //echo 'delnum:' . $delnum;
-    
-    if (!empty($_POST['cmbDelegaciones'])) {
-      $delnum = mysqli_real_escape_string($dbc, trim($_POST['cmbDelegaciones']));
-      $cmbDelegaciones = mysqli_real_escape_string($dbc, trim($_POST['cmbDelegaciones']));
-    }
-    else {
-      $cmbDelegaciones=0;
-    }
-
-    if (!empty($_POST['cmbSubdelegaciones'])) {
-      $subdelnum = mysqli_real_escape_string($dbc, trim($_POST['cmbSubdelegaciones']));
-      $cmbSubdelegaciones = mysqli_real_escape_string($dbc, trim($_POST['cmbSubdelegaciones']));
-      //echo '1'. '<BR />';
-      //echo 'subdel:' . $_POST['cmbSubdelegaciones'] . '<BR />';
-      //echo 'subdelnum:' . $subdelnum . '<BR />';
-      //echo $cmbSubdelegaciones . '<BR />';
-    }
-    else {
-      $cmbSubdelegaciones=0;
-        //echo '2'. '<BR />';
-    }
-    //echo '3'. '<BR />';
-    //echo 'subdel:' . $_POST['cmbSubdelegaciones'] . '<BR />';
-    //echo 'subdelnum:' . $subdelnum . '<BR />';
-
-    $cmbLotes = mysqli_real_escape_string($dbc, trim($_POST['cmbLotes']));
-    $cmbValijas = mysqli_real_escape_string($dbc, trim($_POST['cmbValijas']));
-    $cmbtipomovimiento = mysqli_real_escape_string($dbc, trim($_POST['cmbtipomovimiento']));
     $cmbgponuevo = mysqli_real_escape_string($dbc, trim($_POST['cmbgponuevo']));
     $cmbgpoactual = mysqli_real_escape_string($dbc, trim($_POST['cmbgpoactual']));
     $comentario = mysqli_real_escape_string($dbc, trim($_POST['comentario']));
@@ -84,20 +111,18 @@
     //$error = false;
     $output_form = 'no';
 
-    if (empty($cmbLotes) || ($cmbLotes == 0) ) {
+    //Inician validaciones
+    if ( empty( $cmbLotes ) ) {
       //if ($cmbLotes == 0)  {
       echo '<p class="error">Olvidaste seleccionar un Lote.</p>';
       //echo 'Lote:' . $cmbLotes;
       $output_form = 'yes';
     }
 
-    if (empty($cmbValijas)) {
+    if ( empty( $cmbValijas ) ) {
       echo '<p class="error">Olvidaste seleccionar una Valija.</p>';
       $output_form = 'yes';
     }
-
-    //echo 'fecha_solicitud_del:' . $fecha_solicitud_del . '<br />';
-    //echo 'fecha_solicitud_del:' . utf8_encode($fecha_solicitud_del) . '<br />';
 
     if (!preg_match('/^[0-9]{9}$/', utf8_encode($fecha_solicitud_del) )) {
       $anio        = substr(utf8_encode($fecha_solicitud_del), 0, 4);
@@ -218,17 +243,6 @@
 
       if ($_FILES['new_file']['error'] == 0) {
 
-//-----------------
-          //Move the file to the target upload folder
-//          $timetime = time();
-          
-//          $target = MM_UPLOADPATH_CTASSINDO . $timetime . " " . $new_file;
-
-
-//          if (move_uploaded_file($_FILES['new_file']['tmp_name'], $target)) {
-
-
-//----------------
         $timetime = time();
         //Move the file to the target upload folder
         $target = MM_UPLOADPATH_CTASSINDO . $timetime . " " . basename($new_file);
@@ -274,9 +288,12 @@
   //mysqli_close($dbc);
 
   if ($output_form == 'yes') {
-    $cmbDelegaciones = 0;
-    $cmbSubdelegaciones = 0;
+    //$cmbDelegaciones = -1;
+    //$cmbSubdelegaciones = -1;
+    $dbc = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
 
+    //$cmbLotes = -1;
+    //$cmbValijas = -1;
     ?>
   
     <p>Por favor captura los datos solicitados para crear una nueva solicitud.</p>
@@ -284,20 +301,100 @@
       <fieldset>
         
         <legend>Informaci&oacute;n de la solicitud</legend>
-        <input type="hidden" name="MAX_FILE_SIZE" value="<?php echo MM_MAXFILESIZE_SOLICITUD; ?>" />
-        
+
         <label># de Lote:</label>
-        <select id="cmbLotes" name="cmbLotes"></select><br />
+        <select id="cmbLotes" name="cmbLotes">
+        <?php
+        $query = "SELECT * 
+                  FROM lotes 
+                  WHERE user_id = " . $_SESSION['user_id'] . 
+                  " ORDER BY fecha_modificacion DESC;";
+        $result = mysqli_query($dbc, $query);
+        echo '<option value="-1">Seleccione # Lote</option>';  
+        while ($row = mysqli_fetch_array($result)) {
+            echo '<option value="' . $row['id_lote'] . '" ' . fnloteSelect( $row['id_lote'] ) . '>' . $row['lote_anio'] . '</option>';
+        }
+        ?>
+        </select><br />
+
         <label># de Valija:</label>
-        <select id="cmbValijas" name="cmbValijas"></select><br />
+        <?php
+          $query = "SELECT valijas.id_valija, 
+                    valijas.delegacion AS num_del, 
+                    delegaciones.descripcion AS delegacion_descripcion, 
+                    valijas.num_oficio_del,
+                    valijas.num_oficio_ca, 
+                    valijas.user_id
+                    FROM valijas, delegaciones 
+                    WHERE valijas.delegacion = delegaciones.delegacion 
+                    AND valijas.user_id = " . $_SESSION['user_id'] . 
+                    " ORDER BY valijas.id_valija DESC LIMIT " . MM_MAXVALIJAS;
+
+          $result = mysqli_query($dbc, $query);
+          echo '<select id="cmbValijas" name="cmbValijas">';
+          echo '<option value="-1">Seleccione # Valija</option>';
+
+          while ($row = mysqli_fetch_array($result)) {
+            echo '<option value="' . $row['id_valija'] . '" ' . fnvalijaSelect( $row['id_valija'] ) . '>' . $row['num_oficio_ca'] . ': ' . $row['num_del'] . '-' . $row['delegacion_descripcion'] . '</option>';
+          }
+        ?>
+        </select><br />
+
         <label for="fecha_solicitud_del">Fecha solicitud:</label>
         <input type="date" id="fecha_solicitud_del" name="fecha_solicitud_del" value="<?php if (!empty($fecha_solicitud_del)) echo $fecha_solicitud_del; ?>" /><br />
+
         <label>Tipo de movimiento:</label>
-        <select id="cmbtipomovimiento" name="cmbtipomovimiento"></select><br />
+        <?php
+          $result = mysqli_query($dbc, "SELECT * FROM movimientos ORDER BY 1 ASC");
+          echo '<select id="cmbtipomovimiento" name="cmbtipomovimiento">';
+          echo '<option value="0">Seleccione Tipo de Movimiento</option>';  
+
+          while ( $row = mysqli_fetch_array( $result ) ) {
+            echo '<option value="' . $row['id_movimiento'] . '" ' . fntipomovimientoSelect( $row['id_movimiento'] ) . '>' . $row['descripcion'] . '</option>';
+          }
+        ?>
+        </select><br />
+
         <label>Delegaci&oacute;n IMSS:</label>
-        <select id="cmbDelegaciones" name="cmbDelegaciones"></select><br />
-        <label>Subdelegaci&oacute;n IMSS:</label>
-        <select id="cmbSubdelegaciones" name="cmbSubdelegaciones"></select><br />
+        
+          <?php
+          $dbc = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+          $result = mysqli_query($dbc, "SELECT * FROM delegaciones WHERE activo = 1 ORDER BY delegacion");
+          //echo $result;
+          
+          echo '<select id="cmbDelegaciones" name="cmbDelegaciones">';
+
+          echo '<option value="-1">Seleccione Delegaci&oacute;n</option>';
+          while ($row = mysqli_fetch_array($result)) {
+            echo '<option value="' . $row['delegacion'] . '" ' . fntdelegacionSelect( $row['delegacion'] ) . '>' . $row['delegacion'] . ' - ' . $row['descripcion'] . '</option>';
+          }
+        ?>
+        </select><br />
+
+        <label>Subdelegaci&oacute;nes IMSS II:</label>
+        <select id="cmbSubdelegacionesII" name="cmbSubdelegacionesII">
+        <option value="-11">Seleccione Subdelegaci&oacute;n</option>
+        
+        <?php
+          //echo "|:";
+          //echo $_POST['cmbDelegaciones'];
+          
+          if ( !empty( $_POST['cmbSubdelegacionesII'] ) ) {
+            $dbc = mysqli_connect( DB_HOST, DB_USER, DB_PASSWORD, DB_NAME );
+            //echo "SELECT * FROM subdelegaciones WHERE delegacion = " . $_POST['cmbDelegaciones'] . " ORDER BY subdelegacion";
+
+            $result = mysqli_query( $dbc, "SELECT * FROM subdelegaciones WHERE delegacion = " . $_POST['cmbDelegaciones'] . " ORDER BY subdelegacion" );
+            //echo "|";
+            //echo $row['delegacion'];
+            //echo "|";
+            //echo $row['subdelegacion'];
+          
+  while ( $row = mysqli_fetch_array( $result ) ) {
+    echo '<option value="' . $row['subdelegacion'] . '" ' . fntsubdelegacionSelect( $row['subdelegacion'] ) . '>' . $row['subdelegacion'] . ' - ' . $row['descripcion'] . '</option>';
+  }
+          }
+        ?>
+        </select><br />
 
         <label for="primer_apellido">Primer Apellido:</label>
         <input type="text" id="primer_apellido" name="primer_apellido" value="<?php if (!empty($primer_apellido)) echo $primer_apellido; ?>" /><br />
@@ -353,9 +450,14 @@
     mysqli_query($dbc, $query);
 
     // Clear the score data to clear the form
+
+    $cmbLote    = -1;
+    $cmbValijas = -1;
     $fecha_solicitud_del = "";
-    $cmbDelegaciones = "";
-    $cmbSubdelegaciones = "";
+    $cmbtipomovimiento = 0;
+    $cmbDelegaciones = -1;
+    $cmbSubdelegaciones = -1;
+
     $nombre = "";
     $primer_apellido = "";
     $segundo_apellido = "";
@@ -363,7 +465,6 @@
     $curp = "";
     $cargo = "";
     $usuario = "";
-    $cmbtipomovimiento = "";
     $cmbgponuevo = "";
     $cmbgpoactual = "";
     $comentario = "";
