@@ -33,7 +33,7 @@
 
           if (  ($user_username <> 'MA') &&
                 ($user_username <> 'TO') &&
-                ($user_username <> 'TOL') ) {
+                ($user_username <> 'TO') ) {
             //echo $user_username;
             echo '<p class="error">Usuario no aprobado por el Administrador. Por favor <a href="login.php">inicia sesi&oacute;n</a> con un usuario pre-aprobado para acceder a esta p&aacute;gina.</p>';
             // Insert the page footer

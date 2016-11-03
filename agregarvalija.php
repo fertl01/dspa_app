@@ -1,4 +1,5 @@
 <?php
+
   // Start the session
   require_once('startsession.php');
 
@@ -6,97 +7,178 @@
   $page_title = 'Gesti&oacute;n Cuentas SINDO - Agregar Valija';
   require_once('headerCuentasSINDO.php');
 
-  // Show the navigation menu
-  require_once('navmenu.php');
-
+  require_once('appvars.php');
+  require_once('connectvars.php');
+  
   // Make sure the user is logged in before going any further.
-  if (!isset($_SESSION['user_id'])) {
+  if ( !isset( $_SESSION['user_id'] ) ) {
     echo '<p class="login">Por favor <a href="login.php">inicia sesi&oacute;n</a> para acceder a esta p&aacutegina.</p>';
     // Insert the page footer
-    require_once('footer.php');
     exit();
   }
 
-  require_once('appvars.php');
-  require_once('connectvars.php');
+  // Show the navigation menu
+  require_once('navmenu.php');
+  require_once( 'funciones.php' );
 
+  $dbc = mysqli_connect( DB_HOST, DB_USER, DB_PASSWORD, DB_NAME );
 
-  if (isset($_POST['submit'])) {
+  if ( isset( $_POST['submit'] ) ) {
     // Grab the profile data from the POST
-    $dbc = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
 
-    $num_oficio_ca = mysqli_real_escape_string($dbc, trim($_POST['num_oficio_ca']));
+    $num_oficio_ca = $_POST['num_oficio_ca'];
     $num_oficio_del = mysqli_real_escape_string($dbc, trim($_POST['num_oficio_del']));
     $fecha_recepcion_ca = mysqli_real_escape_string($dbc, trim($_POST['fecha_recepcion_ca']));
     $fecha_valija_del = mysqli_real_escape_string($dbc, trim($_POST['fecha_valija_del']));
-
     $cmbDelegaciones = mysqli_real_escape_string($dbc, trim($_POST['cmbDelegaciones']));
-
     $comentario = mysqli_real_escape_string($dbc, trim($_POST['comentario']));
     $timetime = time();
-    
     $new_file = mysqli_real_escape_string($dbc, trim($_FILES['new_file']['name']));
-    
     $new_file_type = $_FILES['new_file']['type'];
     $new_file_size = $_FILES['new_file']['size']; 
-    $error = false;
+    $output_form = 'no';
 
-    if (!empty($num_oficio_ca) && !empty($num_oficio_del) && 
-        !empty($fecha_recepcion_ca) && !empty($fecha_valija_del) && !empty($cmbDelegaciones) &&  $cmbDelegaciones!=-1 && !empty($new_file)) {
+    if ( empty( $num_oficio_ca ) ) {
+      echo '<p class="error">Olvidaste capturar un N&uacute;mero de &Aacute;rea de Gesti&oacute;n</p>';
+      $output_form = 'yes';
+    }
+    else {
+      if ( !preg_match( '/^[1-9][0-9]*$/', utf8_encode( $num_oficio_ca ) ) ) {
+        echo '<p class="error">N&uacute;mero de &Aacute;rea de Gesti&oacute;n inv&aacute;lido.</p>';
+        $output_form = 'yes';
+      }
+    }
 
-      if ( (($new_file_type == 'application/pdf') || ($new_file_type == 'image/gif') || 
-            ($new_file_type == 'image/jpeg')      || ($new_file_type == 'image/pjpeg') ||
-            ($new_file_type == 'image/png')
-           ) && ($new_file_size > 0) && ($new_file_size <= MM_MAXFILESIZE_VALIJA) ) {
+    if ( !preg_match( '/^\d{9}$/', utf8_encode( $fecha_recepcion_ca ) ) ) {
+      $anio = substr( utf8_encode( $fecha_recepcion_ca ), 0, 4 );
+      $mes  = substr( utf8_encode( $fecha_recepcion_ca ), 5, 2 );
+      $dia  = substr( utf8_encode( $fecha_recepcion_ca ), 8, 2 );
+      
+      if ( !checkdate( $mes, $dia, $anio ) ) {
+        echo '<p class="error">Fecha de &Aacute;rea de Gesti&oacute;n inv&aacute;lida.';
+        echo ' A&ntilde;o:'  . $anio;
+        echo ' Mes:'         . $mes;
+        echo ' D&iacute;a:'  . $dia  . '<br />';
+        $output_form = 'yes';
+      }
 
-        if ($_FILES['new_file']['error'] == 0) {
+      if ( $anio < 2015 ) {
+        echo '<p class="error">El a&ntilde;o en Fecha de &Aacute;rea de Gesti&oacute;n es inv&aacute;lido.';
+        echo ' A&ntilde;o:'  . $anio;
+        $output_form = 'yes'; 
+      }
+    }
+
+    if ( empty( $num_oficio_del ) ) {
+      echo '<p class="error">Olvidaste capturar un N&uacute;mero de Oficio Delegaci&oacute;n.</p>';
+      $output_form = 'yes';
+    }
+    else {
+      if ( !preg_match( '/^[a-z A-Z0-9\/\._\-]*$/', utf8_encode( $num_oficio_del ) ) ) {
+        echo '<p class="error">Caracteres inv&aacute;lidos en N&uacute;mero de Oficio Delegaci&oacute;n.</p>';
+        $output_form = 'yes';
+      }
+    }
+
+    if ( !preg_match( '/^\d{9}$/', utf8_encode( $fecha_valija_del ) ) ) {
+      $anio = substr( utf8_encode( $fecha_valija_del ), 0, 4 );
+      $mes  = substr( utf8_encode( $fecha_valija_del ), 5, 2 );
+      $dia  = substr( utf8_encode( $fecha_valija_del ), 8, 2 );
+      
+      if ( !checkdate( $mes, $dia, $anio ) ) {
+        echo '<p class="error">Fecha de Oficio Delegaci&oacute;n inv&aacute;lida.';
+        echo ' A&ntilde;o:'  . $anio;
+        echo ' Mes:'         . $mes;
+        echo ' D&iacute;a:'  . $dia  . '<br />';
+        $output_form = 'yes';
+      }
+
+      if ( $anio < 2015 ) {
+        echo '<p class="error">El a&ntilde;o en Fecha de Oficio Delegaci&oacute;n es inv&aacute;lido.';
+        echo ' A&ntilde;o:'  . $anio;
+        $output_form = 'yes'; 
+      }
+    }
+
+    if ( empty( $cmbDelegaciones ) || 
+          ( $cmbDelegaciones == 0) || 
+          ( $cmbDelegaciones == -1 ) 
+        ) {
+      echo '<p class="error">Olvidaste seleccionar una Delegaci&oacute;n.</p>';
+      $output_form = 'yes';
+    }
+
+    if ( empty( $new_file ) ) {
+      echo '<p class="error">Olvidaste adjuntar el documento.</p>';
+      $output_form = 'yes';
+    }
+
+    if ( $output_form == 'no' ) {
+
+      if ( ( ( $new_file_type == 'application/pdf' ) || ( $new_file_type == 'image/gif' ) || 
+            ( $new_file_type == 'image/jpeg' )       || ( $new_file_type == 'image/pjpeg' ) ||
+            ( $new_file_type == 'image/png' )
+           ) && ( $new_file_size > 0 ) && ( $new_file_size <= MM_MAXFILESIZE_VALIJA ) 
+          ) {
+
+        if ( $_FILES['new_file']['error'] == 0 ) {
           //Move the file to the target upload folder
           $timetime = time();
 
           // Move the file to the target upload folder
           $target = MM_UPLOADPATH_CTASSINDO . $timetime . " " . $new_file;
 
-          //$target = MM_UPLOADPATH_CTASSINDO . basename($new_file);
-          //echo 'Target:' . $target . '<br />';
+          if ( move_uploaded_file( $_FILES['new_file']['tmp_name'], $target ) ) {
 
-          if (move_uploaded_file($_FILES['new_file']['tmp_name'], $target)) {
+            $num_oficio_ca  = utf8_encode( $num_oficio_ca );
+            $num_oficio_del = utf8_encode( $num_oficio_del );
+            $comentario     = utf8_encode( $comentario );
 
-            // Conectarse a la BD
-            $dbc = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
-            // The new file file move was successful, now make sure any old file is deleted
-            //if (!empty($old_file) && ($old_file != $new_file)) {
-              //@unlink(MM_UPLOADPATH_CTASSINDO . $old_file);
-              //echo 'unlink';
+            $pattern = '/[\s]/';
+            $replacement = '';
+            $new_num_oficio_del = preg_replace($pattern, $replacement, $num_oficio_del);
+            
+            //Check for existing number
+            $query = "SELECT * FROM valijas WHERE num_oficio_ca = '$num_oficio_ca'";
+            $data = mysqli_query( $dbc, $query );
 
-              //echo 'New_file_insert:' . $new_file . '<br />';
+            if ( mysqli_num_rows( $data ) == 0 ) {
+              //The number is unique, so insert the data
+
               $query = "INSERT INTO valijas 
                 ( num_oficio_ca, num_oficio_del, 
                 fecha_recepcion_ca, fecha_captura_ca, fecha_valija_del, 
                 id_remitente, delegacion, comentario, archivo, user_id)
                 VALUES 
-                ( '$num_oficio_ca', '$num_oficio_del', 
+                ( '$num_oficio_ca', '$new_num_oficio_del', 
                   '$fecha_recepcion_ca', NOW(), '$fecha_valija_del', 
                   0, '$cmbDelegaciones', '$comentario', '$timetime $new_file', " . $_SESSION['user_id'] . " )";
-              //echo $query;
-
-              mysqli_query($dbc, $query);
+              mysqli_query( $dbc, $query );
 
               // Confirm success with the user
-              echo '<p class="nota"><strong>La nueva valija ha sido creada exitosamente. </strong>Agregar <a href="agregarsolicitud.php">nueva solicitud</a></p>';
-              echo '<p class="titulo2">Agregar <a href="agregarvalija.php">nueva valija</a></p>';
-              echo '<p>O puedes regresar al <a href="indexCuentasSINDO.php">inicio</a></p>';
-              // Clear the score data to clear the form
-              $num_oficio_ca = "";
-              $num_oficio_del = "";
-              $fecha_recepcion_ca = "";
-              $fecha_valija_del = "";
-              $cmbDelegaciones = -1;
-              $comentario = "";
-              $new_file = "";
+              echo '<p class="nota"><strong>La nueva valija ha sido creada exitosamente. </strong></p><br />';
+              echo '# &Aacute;rea de Gesti&oacute;n: ' . $num_oficio_ca . '<br />';
+              echo 'Fecha: ' . $fecha_recepcion_ca . '<br /><br />';
+              echo '# Oficio: ' . $new_num_oficio_del . '<br />';
+              echo 'Fecha: ' . $fecha_valija_del . '<br />';
+
+              $result = mysqli_query( $dbc, "SELECT * FROM delegaciones WHERE activo = 1 AND delegacion = '$cmbDelegaciones'" );
+              while ( $row = mysqli_fetch_array( $result ) )
+                echo 'Delegaci&oacute;n: ' . $row['delegacion'] . ' - ' . $row['descripcion'] . '<br /><br />';
               
-              mysqli_close($dbc);
+              echo 'Comentario: ' . $comentario . '<br />';
+              echo 'Archivo adjunto final: ' . $timetime . ' ' . $new_file . '<br /></p>';
+              
+              echo '<p class="titulo2">Agregar <a href="agregarvalija.php">nueva valija</a></p>';
+              echo '<p class="nota">Agregar <a href="agregarsolicitud.php">nueva solicitud</a><br />';
+              echo '<p>O puedes regresar al <a href="indexCuentasSINDO.php">inicio</a></p>';
+              
+              mysqli_close( $dbc );
               exit();
-            //}
+            }
+            else {
+              echo '<p class="error">Ya existe este N&uacute;mero &Aacute;rea de Gesti&oacute;n. Por favor utiliza uno diferente o agrega m&aacute;s solicitudes a la existente.</p>';
+            }
           }
           else {
           echo '<p class="error">Lo sentimos, hubo un problema al cargar tu archivo.</p>';
@@ -109,71 +191,47 @@
 
       // Try to delete the temporary screen shot image file
       @unlink($_FILES['new_file']['tmp_name']); 
+    
     }
     else {
-      echo '<p class="error">Debes ingresar todos los datos obligatorios para registrar la valija.</p>';
+      echo '<p class="error">Debes ingresar todos los datos v&aacute;lidos y obligatorios para registrar la valija.</p>';
     }
-  //mysqli_close($dbc);
   }
 
-  $cmbDelegaciones = -1;
-  ?>
+?>
 
-
-  <p>Por favor captura los datos solicitados para crear una nueva valija.</p>
-    <form enctype="multipart/form-data" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
-      <fieldset>
-        <input type="hidden" name="MAX_FILE_SIZE" value="<?php echo MM_MAXFILESIZE_VALIJA; ?>" />
-        <legend>Informaci&oacute;n de la valija</legend>
-
-        <label for="num_oficio_ca"># &Aacute;rea de Gesti&oacute;n:</label>
-        <input type="text" id="num_oficio_ca" name="num_oficio_ca" value="<?php if (!empty($num_oficio_ca)) echo $num_oficio_ca; ?>" /><br />
-        <label for="fecha_recepcion_ca">Fecha &Aacute;rea de Gesti&oacute;n</label>
-        <input type="date" id="fecha_recepcion_ca" name="fecha_recepcion_ca" value="<?php if (!empty($fecha_recepcion_ca)) echo $fecha_recepcion_ca; ?>" /><br />
-
-        <label for="num_oficio_del"># Oficio Delegaci&oacute;n:</label>
-        <input type="text" id="num_oficio_del" name="num_oficio_del" value="<?php if (!empty($num_oficio_del)) echo $num_oficio_del; ?>" /><br />
-        <label for="fecha_valija_del">Fecha Oficio Delegaci&oacute;n:</label>
-        <input type="date" id="fecha_valija_del" name="fecha_valija_del" value="<?php if (!empty($fecha_valija_del)) echo $fecha_valija_del; ?>" /><br />
-
-        <label>Delegaci&oacute;n IMSS:</label>
-        
-          <?php
-          $dbc = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
-          $result = mysqli_query($dbc, "SELECT * FROM delegaciones WHERE activo = 1 ORDER BY delegacion");
-          //echo $result;
-          
-          echo '<select id="cmbDelegaciones" name="cmbDelegaciones">';
-
-          echo '<option value="-1">Seleccione Delegaci&oacute;n</option>';
-          while ($row = mysqli_fetch_array($result)) {
-            echo '<option value="' . $row['delegacion'] . '" ' . delegacionSel( $row['delegacion'] ) . '>' . $row['delegacion'] . ' - ' . $row['descripcion'] . '</option>';
-          }
-        ?>
-        </select><br />
-
-        <label for="comentario">Comentario u observaci&oacute;n:</label>
-        <textarea id="comentario" name="comentario"><?php if (!empty($comentario)) echo $comentario; ?></textarea><br />
-        <label for="new_file">Archivo:</label>
-        <input type="file" id="new_file" name="new_file"/>
-      </fieldset>
-      <input type="submit" value="Registra valija" name="submit" />
-    </form>
+<form enctype="multipart/form-data" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+<p>Por favor captura los datos solicitados para crear una nueva valija.</p>
+  <fieldset>
+    <input type="hidden" name="MAX_FILE_SIZE" value="<?php echo MM_MAXFILESIZE_VALIJA; ?>" />
+    <legend>Informaci&oacute;n de la valija</legend>
+    <label for="num_oficio_ca"># &Aacute;rea de Gesti&oacute;n:</label>
+    <input type="text" id="num_oficio_ca" name="num_oficio_ca" value="<?php if (!empty($num_oficio_ca)) echo $num_oficio_ca; ?>" /><br />
+    <label for="fecha_recepcion_ca">Fecha &Aacute;rea de Gesti&oacute;n</label>
+    <input type="date" id="fecha_recepcion_ca" name="fecha_recepcion_ca" value="<?php if (!empty($fecha_recepcion_ca)) echo $fecha_recepcion_ca; ?>" /><br />
+    <label for="num_oficio_del"># Oficio Delegaci&oacute;n:</label>
+    <input type="text" id="num_oficio_del" name="num_oficio_del" value="<?php if (!empty($num_oficio_del)) echo $num_oficio_del; ?>" /><br />
+    <label for="fecha_valija_del">Fecha Oficio Delegaci&oacute;n:</label>
+    <input type="date" id="fecha_valija_del" name="fecha_valija_del" value="<?php if (!empty($fecha_valija_del)) echo $fecha_valija_del; ?>" /><br />
+    <label>Delegaci&oacute;n IMSS:</label>
+    <select id="cmbDelegaciones" name="cmbDelegaciones" display=true>
+      <option value="-1">Seleccione Delegaci&oacute;n</option>
+      <?php
+        //$dbc = mysqli_connect( DB_HOST, DB_USER, DB_PASSWORD, DB_NAME );
+        $result = mysqli_query( $dbc, "SELECT * FROM delegaciones WHERE activo = 1 ORDER BY delegacion" );
+        while ( $row = mysqli_fetch_array( $result ) )
+          echo '<option value="' . $row['delegacion'] . '" ' . fntdelegacionSelect( $row['delegacion'] ) . '>' . $row['delegacion'] . ' - ' . $row['descripcion'] . '</option>';
+      ?>
+    </select><br />
+    <label for="comentario">Comentario u observaci&oacute;n:</label>
+    <textarea id="comentario" name="comentario"><?php if (!empty($comentario)) echo $comentario; ?></textarea><br />
+    <label for="new_file">Archivo:</label>
+    <input type="file" id="new_file" name="new_file"/>
+  </fieldset>
+  <input type="submit" value="Registra valija" name="submit" />
+</form>
   
-  <?php
-
-  mysqli_close($dbc);
-
-  function delegacionSel($dele)
-  {
-    if (empty($_POST['cmbDelegaciones'])) {
-      return -1;
-    }
-    else if ($_POST['cmbDelegaciones'] == $dele) {
-      return "selected";
-    }
-  }
-
+<?php
+  mysqli_close( $dbc );
   require_once('footer.php');
-
-  ?>
+?>

@@ -7,10 +7,10 @@
 
 	function subdelegacionSelected( $var_subdelegacion )
 	{
-		if ( empty( $_POST['cmbSubdelegacionesII'] ) ) {
+		if ( empty( $_POST['cmbSubdelegaciones'] ) ) {
 			return "";
 		}
-		else if ( $_POST['cmbSubdelegacionesII'] == $var_subdelegacion) {
+		else if ( $_POST['cmbSubdelegaciones'] == $var_subdelegacion) {
 			return "selected";
 		}
 	}
@@ -19,15 +19,10 @@
 
 	$dbc = mysqli_connect( DB_HOST, DB_USER, DB_PASSWORD, DB_NAME );
 
-	$result = "SELECT * FROM subdelegaciones 
-									WHERE delegacion = $id_delegacion
-									ORDER BY subdelegacion";
-	//echo "subdelegaciones3.php: ";
-	//echo $result;
 	$result = mysqli_query( $dbc, "SELECT * FROM subdelegaciones 
 									WHERE delegacion = $id_delegacion
 									ORDER BY subdelegacion");
-
+	echo '<option value="-1">Seleccione Subdelegaci&oacute;n</option>';
 	while( $row = mysqli_fetch_array( $result ) ) {
 		echo '<option value="' . $row['subdelegacion'] . '" ' . subdelegacionSelected( $row['subdelegacion'] ) . '>' . $row['subdelegacion'] . ' - ' . $row['descripcion'] . '</option>';
 	}

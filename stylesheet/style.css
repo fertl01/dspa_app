@@ -1,5 +1,3 @@
-body { font-family: Courier, monospace; }
-
 .footer {
   text-align: center;
   font-size: 80%;
@@ -7,17 +5,22 @@ body { font-family: Courier, monospace; }
 
 .titulo1 {
   font-weight: bold;
-  color: #FF0000;
 }
 
-.lote {
-  font-family: Impact, Charcoal, sans-serif
+.titulo2 {
   font-weight: bold;
+  font-size: 90%;
 }
 
 .error {
   font-weight: bold;
   color: #FF0000;
+  font-size: 50%;
+}
+
+.nota {
+  font-weight: bold;
+  color: #0000FF;
 }
 
 .login {
@@ -30,12 +33,23 @@ form label {
   font-weight: bold;
 }
 
-td.label td.txt {
+tr.label tr.txt {
   font-weight: bold;
   font-size: 80%;
+  text-align: center;
+}
+
+td.lista {
+  text-align: center;
 }
 
 img.profile {
   vertical-align: top;
 }
+
+.dato { 
+  font-family: Courier, monospace; 
+  font-size: 80%;
+}
+
 
