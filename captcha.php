@@ -1,12 +1,14 @@
 <?php
   session_start();
 
+  require_once('appvars.php');
+
   // Set some important CAPTCHA constants
-  define('CAPTCHA_NUMCHARS', 6);  // number of characters in pass-phrase
+  /*define('CAPTCHA_NUMCHARS', 6);  // number of characters in pass-phrase
   define('CAPTCHA_WIDTH', 100);   // width of image. Add more width if increase CAPTCHA_NUMCHARS
   define('CAPTCHA_HEIGHT', 30);   // height of image. Add more height if increase CAPTCHA_NUMCHARS
   define('CAPTCHA_NUMDOTS', 100);   // dots in the image. Add more height if increase CAPTCHA_NUMCHARS
-  define('CAPTCHA_NUMLINES', 4);   // lines in the image. Add more height if increase CAPTCHA_NUMCHARS
+  define('CAPTCHA_NUMLINES', 4);   // lines in the image. Add more height if increase CAPTCHA_NUMCHARS*/
 
   // Generate the random pass-phrase
   $pass_phrase = "";
@@ -22,8 +24,8 @@
 
   // Set a white background with black text and gray graphics
   $bg_color = imagecolorallocate($img, 255, 255, 255);     // white
-  $text_color = imagecolorallocate($img, 0, 0, 0);         // black
-  $graphic_color = imagecolorallocate($img, 64, 64, 64);   // dark gray
+  $text_color = imagecolorallocate($img, 0, 0, 100);         // black
+  $graphic_color = imagecolorallocate($img, 44, 44, 44);   // dark gray
 
   // Fill the background
   imagefilledrectangle($img, 0, 0, CAPTCHA_WIDTH, CAPTCHA_HEIGHT, $bg_color);
