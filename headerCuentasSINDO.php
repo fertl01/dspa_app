@@ -7,15 +7,17 @@
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.6/css/materialize.min.css">
 		<link rel="stylesheet" type="text/css" href="stylesheet/app.css">
 
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-		<meta charset="utf-8" />
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 		-->
 		
-		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+		<meta charset="utf8" />
+		
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
 		<link rel="stylesheet" type="text/css" href="style.css" />
 		
 		<?php
 			echo '<title>' . $page_title . '</title>';
+			header('Content-Type: text/html; charset=utf-8');
 		?>
 		
 		<script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>

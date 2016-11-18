@@ -21,6 +21,24 @@
     if (isset($_POST['submit'])) {
       // Connect to the database
       $dbc = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+      
+      //$mysqli = new mysqli("localhost", "my_user", "my_password", "test");
+    
+      /* check connection */
+      if (mysqli_connect_errno()) {
+          printf("Connect failed: %s\n", mysqli_connect_error());
+          exit();
+      }
+        
+      /* change character set to utf8 */
+      if (!$dbc->set_charset("utf8")) {
+          printf("Error loading character set utf8: %s\n", $dbc->error);
+      } else {
+          printf("Current character set: %s\n", $dbc->character_set_name());
+      }
+        
+      //$dbc->close();
+
 
       // Grab the user-entered log-in data
       $user_username = mysqli_real_escape_string($dbc, trim($_POST['username']));
@@ -33,9 +51,9 @@
 
           if (  ($user_username <> 'MA') &&
                 ($user_username <> 'TO') &&
-                ($user_username <> 'TO') ) {
+                ($user_username <> 'T') ) {
             //echo $user_username;
-            echo '<p class="error">Usuario no aprobado por el Administrador. Por favor <a href="login.php">inicia sesi&oacute;n</a> con un usuario pre-aprobado para acceder a esta p&aacute;gina.</p>';
+            echo '<p class="error">Usuario no aprobado por el Administrador. Por favor <a href="login.php">inicia sesiónn</a> con un usuario pre-aprobado para acceder a esta página.</p>';
             // Insert the page footer
             require_once('footer.php');
             exit();
@@ -43,7 +61,8 @@
 
 
           // Look up the username and password in the database
-          $query = "SELECT user_id, username FROM dspa_user WHERE username = '$user_username' AND password = SHA('$user_password')";
+          $query = "SELECT user_id, username FROM ctas_usuarios WHERE username = '$user_username' AND password = SHA('$user_password')";
+          printf($query);
           $data = mysqli_query($dbc, $query);
 
           if (mysqli_num_rows($data) == 1) {
@@ -58,16 +77,16 @@
           }
           else {
             // The username/password are incorrect so set an error message
-            $error_msg = 'Lo siento, debes capturar un usuario y contrase&ntilde;a v&aacute;lidos para iniciar sesi&oacute;n.';
+            $error_msg = 'Lo siento, debes capturar un usuario y contraseña válidos para iniciar sesión.';
           }
         }
         else {
           // The username/password weren't entered so set an error message
-          $error_msg = 'Lo siento, debes capturar un usuario y password para iniciar sesi&oacute;n.';
+          $error_msg = 'Lo siento, debes capturar un usuario y password para iniciar sesión.';
         }
       }
       else {
-      echo '<p class="error">Por favor, captura la frase de verificaci&oacute;n (CAPTCHA) exactamente como se muestra.</p>';
+      echo '<p class="error">Por favor, captura la frase de verificación (CAPTCHA) exactamente como se muestra.</p>';
       }
 
     }
@@ -84,22 +103,22 @@
 
   <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
     <fieldset>
-      <legend>Iniciar sesi&oacute;n</legend>
+      <legend>Iniciar sesión</legend>
       <label for="username">Usuario (CURP):</label>
       <input type="text" name="username" value="<?php if (!empty($user_username)) echo $user_username; ?>" /><br />
-      <label for="password">Contrase&ntilde;a:</label>
+      <label for="password">Contraseña:</label>
       <input type="password" name="password" /><br />
-      <label for="verify">Verificaci&oacute;n:</label>
+      <label for="verify">Verificación:</label>
       <input type="text" id="verify" name="verify" value="Captura la frase(CAPTCHA)" /> <img src="captcha.php" alt="Verificación CAPTCHA" />
     </fieldset>
-    <input type="submit" value="Inicia sesi&oacute;n" name="submit" />
+    <input type="submit" value="Inicia sesión" name="submit" />
   </form>
 
 <?php
   }
   else {
     // Confirm the successful log-in
-    echo('<p class="login">Has iniciado sesi&oacute;n como ' . $_SESSION['username'] . '.</p>');
+    echo('<p class="login">Has iniciado sesión como ' . $_SESSION['username'] . '.</p>');
   }
 ?>
 

@@ -61,7 +61,7 @@ versolicitud.php
 
 files/
 images/
-imagesprofile/
+imagesprofile/*
 sql/
 tmp/
 filesctasSINDO/*

@@ -43,16 +43,16 @@
       $output_form = 'yes';
     }
     else {
-      if ( !preg_match( '/^[1-9][0-9]*$/', utf8_encode( $num_oficio_ca ) ) ) {
+      if ( !preg_match( '/^[1-9][0-9]*$/', $num_oficio_ca ) ) {
         echo '<p class="error">N&uacute;mero de &Aacute;rea de Gesti&oacute;n inv&aacute;lido.</p>';
         $output_form = 'yes';
       }
     }
 
-    if ( !preg_match( '/^\d{9}$/', utf8_encode( $fecha_recepcion_ca ) ) ) {
-      $anio = substr( utf8_encode( $fecha_recepcion_ca ), 0, 4 );
-      $mes  = substr( utf8_encode( $fecha_recepcion_ca ), 5, 2 );
-      $dia  = substr( utf8_encode( $fecha_recepcion_ca ), 8, 2 );
+    if ( !preg_match( '/^\d{9}$/', $fecha_recepcion_ca ) ) {
+      $anio = substr( $fecha_recepcion_ca , 0, 4 );
+      $mes  = substr( $fecha_recepcion_ca , 5, 2 );
+      $dia  = substr( $fecha_recepcion_ca , 8, 2 );
       
       if ( !checkdate( $mes, $dia, $anio ) ) {
         echo '<p class="error">Fecha de &Aacute;rea de Gesti&oacute;n inv&aacute;lida.';
@@ -74,16 +74,16 @@
       $output_form = 'yes';
     }
     else {
-      if ( !preg_match( '/^[a-z A-Z0-9\/\._\-]*$/', utf8_encode( $num_oficio_del ) ) ) {
+      if ( !preg_match( '/^[a-z A-Z0-9\/\._\-]*$/', $num_oficio_del ) ) {
         echo '<p class="error">Caracteres inv&aacute;lidos en N&uacute;mero de Oficio Delegaci&oacute;n.</p>';
         $output_form = 'yes';
       }
     }
 
-    if ( !preg_match( '/^\d{9}$/', utf8_encode( $fecha_valija_del ) ) ) {
-      $anio = substr( utf8_encode( $fecha_valija_del ), 0, 4 );
-      $mes  = substr( utf8_encode( $fecha_valija_del ), 5, 2 );
-      $dia  = substr( utf8_encode( $fecha_valija_del ), 8, 2 );
+    if ( !preg_match( '/^\d{9}$/', $fecha_valija_del ) ) {
+      $anio = substr( $fecha_valija_del, 0, 4 );
+      $mes  = substr( $fecha_valija_del, 5, 2 );
+      $dia  = substr( $fecha_valija_del, 8, 2 );
       
       if ( !checkdate( $mes, $dia, $anio ) ) {
         echo '<p class="error">Fecha de Oficio Delegaci&oacute;n inv&aacute;lida.';
@@ -130,22 +130,24 @@
 
           if ( move_uploaded_file( $_FILES['new_file']['tmp_name'], $target ) ) {
 
-            $num_oficio_ca  = utf8_encode( $num_oficio_ca );
-            $num_oficio_del = utf8_encode( $num_oficio_del );
-            $comentario     = utf8_encode( $comentario );
+            $num_oficio_ca  =  $num_oficio_ca;
+            $num_oficio_del =  $num_oficio_del;
+            echo $comentario;
+            echo utf8_encode( $comentario );
+            $comentario     = $comentario;
 
             $pattern = '/[\s]/';
             $replacement = '';
             $new_num_oficio_del = preg_replace($pattern, $replacement, $num_oficio_del);
             
             //Check for existing number
-            $query = "SELECT * FROM valijas WHERE num_oficio_ca = '$num_oficio_ca'";
+            $query = "SELECT * FROM ctas_valijas WHERE num_oficio_ca = '$num_oficio_ca'";
             $data = mysqli_query( $dbc, $query );
 
             if ( mysqli_num_rows( $data ) == 0 ) {
               //The number is unique, so insert the data
 
-              $query = "INSERT INTO valijas 
+              $query = "INSERT INTO ctas_valijas 
                 ( num_oficio_ca, num_oficio_del, 
                 fecha_recepcion_ca, fecha_captura_ca, fecha_valija_del, 
                 id_remitente, delegacion, comentario, archivo, user_id)
@@ -154,6 +156,7 @@
                   '$fecha_recepcion_ca', NOW(), '$fecha_valija_del', 
                   0, '$cmbDelegaciones', '$comentario', '$timetime $new_file', " . $_SESSION['user_id'] . " )";
               mysqli_query( $dbc, $query );
+              echo $query;
 
               // Confirm success with the user
               echo '<p class="nota"><strong>La nueva valija ha sido creada exitosamente. </strong></p><br />';
@@ -162,7 +165,7 @@
               echo '# Oficio: ' . $new_num_oficio_del . '<br />';
               echo 'Fecha: ' . $fecha_valija_del . '<br />';
 
-              $result = mysqli_query( $dbc, "SELECT * FROM delegaciones WHERE activo = 1 AND delegacion = '$cmbDelegaciones'" );
+              $result = mysqli_query( $dbc, "SELECT * FROM ctas_delegaciones WHERE activo = 1 AND delegacion = '$cmbDelegaciones'" );
               while ( $row = mysqli_fetch_array( $result ) )
                 echo 'Delegaci&oacute;n: ' . $row['delegacion'] . ' - ' . $row['descripcion'] . '<br /><br />';
               
@@ -200,7 +203,7 @@
 
 ?>
 
-<form enctype="multipart/form-data" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+<form enctype="multipart/form-data" method="post" accept-charset="utf-8" action="<?php echo $_SERVER['PHP_SELF']; ?>">
 <p>Por favor captura los datos solicitados para crear una nueva valija.</p>
   <fieldset>
     <input type="hidden" name="MAX_FILE_SIZE" value="<?php echo MM_MAXFILESIZE_VALIJA; ?>" />
@@ -218,7 +221,7 @@
       <option value="-1">Seleccione Delegaci&oacute;n</option>
       <?php
         //$dbc = mysqli_connect( DB_HOST, DB_USER, DB_PASSWORD, DB_NAME );
-        $result = mysqli_query( $dbc, "SELECT * FROM delegaciones WHERE activo = 1 ORDER BY delegacion" );
+        $result = mysqli_query( $dbc, "SELECT * FROM ctas_delegaciones WHERE activo = 1 ORDER BY delegacion" );
         while ( $row = mysqli_fetch_array( $result ) )
           echo '<option value="' . $row['delegacion'] . '" ' . fntdelegacionSelect( $row['delegacion'] ) . '>' . $row['delegacion'] . ' - ' . $row['descripcion'] . '</option>';
       ?>

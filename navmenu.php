@@ -7,7 +7,7 @@
     echo '<a href="viewprofile.php">Ver Perfil</a> &#10070; ';
     echo '<a href="editprofile.php">Editar Perfil</a> &#10070; ';
 
-    echo '<a href="indexCuentasSINDO.php">Gesti&oacute;n Cuentas SINDO</a> &#10070; ';
+    echo '<a href="indexCuentasSINDO.php">Gestión Cuentas SINDO</a> &#10070; ';
 
     //echo '<a href="valindex.php">Cargar Archivo Validador-INFONAVIT</a> &#10070; ';
     //if ($_SESSION['username'] = 'TOLF') {

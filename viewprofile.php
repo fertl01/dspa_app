@@ -25,10 +25,10 @@
 
   // Grab the profile data from the database
   if (!isset($_GET['user_id'])) {
-    $query = "SELECT username, first_name, first_last_name, second_last_name, gender, birthdate, picture FROM dspa_user WHERE user_id = '" . $_SESSION['user_id'] . "'";
+    $query = "SELECT username, first_name, first_last_name, second_last_name, gender, birthdate, picture FROM ctas_usuarios WHERE user_id = '" . $_SESSION['user_id'] . "'";
   }
   else {
-    $query = "SELECT username, first_name, first_last_name, second_last_name, gender, birthdate, picture FROM dspa_user WHERE user_id = '" . $_GET['user_id'] . "'";
+    $query = "SELECT username, first_name, first_last_name, second_last_name, gender, birthdate, picture FROM ctas_usuarios WHERE user_id = '" . $_GET['user_id'] . "'";
   }
   $data = mysqli_query($dbc, $query);
 

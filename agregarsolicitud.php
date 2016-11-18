@@ -170,7 +170,7 @@
 
               // Conectarse a la BD
               $dbc = mysqli_connect( DB_HOST, DB_USER, DB_PASSWORD, DB_NAME );
-              $query = "INSERT INTO solicitudes 
+              $query = "INSERT INTO ctas_solicitudes 
                           ( id_valija, id_lote, 
                             fecha_solicitud_del, 
                             delegacion, subdelegacion, 
@@ -253,7 +253,7 @@ $cmbSubdelegaciones = -1;
       <option value="0">Seleccione # Lote</option>
       <?php
         $query = "SELECT * 
-                  FROM lotes 
+                  FROM ctas_lotes 
                   WHERE user_id = " . $_SESSION['user_id'] . 
                   " ORDER BY fecha_modificacion DESC;";
         $result = mysqli_query($dbc, $query);
@@ -266,16 +266,16 @@ $cmbSubdelegaciones = -1;
     <select id="cmbValijas" name="cmbValijas">
       <option value="0">Seleccione # Valija</option>
       <?php
-        $query = "SELECT valijas.id_valija, 
-                  valijas.delegacion AS num_del, 
-                  delegaciones.descripcion AS delegacion_descripcion, 
-                  valijas.num_oficio_del,
-                  valijas.num_oficio_ca, 
-                  valijas.user_id
-                  FROM valijas, delegaciones 
-                  WHERE valijas.delegacion = delegaciones.delegacion 
-                  AND valijas.user_id = " . $_SESSION['user_id'] . 
-                  " ORDER BY valijas.id_valija DESC LIMIT " . MM_MAXVALIJAS;
+        $query = "SELECT ctas_valijas.id_valija, 
+                  ctas_valijas.delegacion AS num_del, 
+                  ctas_delegaciones.descripcion AS delegacion_descripcion, 
+                  ctas_valijas.num_oficio_del,
+                  ctas_valijas.num_oficio_ca, 
+                  ctas_valijas.user_id
+                  FROM ctas_valijas, ctas_delegaciones 
+                  WHERE ctas_valijas.delegacion = ctas_delegaciones.delegacion 
+                  AND ctas_valijas.user_id = " . $_SESSION['user_id'] . 
+                  " ORDER BY ctas_valijas.id_valija DESC LIMIT " . MM_MAXVALIJAS;
         $result = mysqli_query( $dbc, $query );
         while ( $row = mysqli_fetch_array( $result ) )
           echo '<option value="' . $row['id_valija'] . '" ' . fnvalijaSelect( $row['id_valija'] ) . '>' . $row['num_oficio_ca'] . ': ' . $row['num_del'] . '-' . $row['delegacion_descripcion'] . '</option>';
@@ -289,7 +289,7 @@ $cmbSubdelegaciones = -1;
     <select id="cmbtipomovimiento" name="cmbtipomovimiento">
       <option value="0">Seleccione Tipo de Movimiento</option>  
       <?php
-        $result = mysqli_query( $dbc, "SELECT * FROM movimientos ORDER BY 1 ASC" );
+        $result = mysqli_query( $dbc, "SELECT * FROM ctas_movimientos ORDER BY 1 ASC" );
         while ( $row = mysqli_fetch_array( $result ) )
           echo '<option value="' . $row['id_movimiento'] . '" ' . fntipomovimientoSelect( $row['id_movimiento'] ) . '>' . $row['descripcion'] . '</option>';
       ?>
@@ -299,7 +299,7 @@ $cmbSubdelegaciones = -1;
     <select id="cmbDelegaciones" name="cmbDelegaciones">
       <option value="0">Seleccione Delegaci&oacute;n</option>
       <?php
-        $result = mysqli_query( $dbc, "SELECT * FROM delegaciones WHERE activo = 1 ORDER BY delegacion" );
+        $result = mysqli_query( $dbc, "SELECT * FROM ctas_delegaciones WHERE activo = 1 ORDER BY delegacion" );
         while ( $row = mysqli_fetch_array( $result ) )
           echo '<option value="' . $row['delegacion'] . '" ' . fntdelegacionSelect( $row['delegacion'] ) . '>' . $row['delegacion'] . ' - ' . $row['descripcion'] . '</option>';
       ?>
@@ -310,7 +310,7 @@ $cmbSubdelegaciones = -1;
       <option value="-1">Seleccione Subdelegaci&oacute;n</option>
       <?php
         if ( !empty( $_POST['cmbSubdelegaciones'] ) || $_POST['cmbSubdelegaciones'] == -1 ) 
-          $result = mysqli_query( $dbc, "SELECT * FROM subdelegaciones 
+          $result = mysqli_query( $dbc, "SELECT * FROM ctas_subdelegaciones 
                                           WHERE delegacion = " . $_POST['cmbDelegaciones'] . " ORDER BY subdelegacion" );
           while ( $row = mysqli_fetch_array( $result ) )
             echo '<option value="' . $row['subdelegacion'] . '" ' . fntsubdelegacionSelect( $row['subdelegacion'] ) . '>' . $row['subdelegacion'] . ' - ' . $row['descripcion'] . '</option>';
@@ -339,7 +339,7 @@ $cmbSubdelegaciones = -1;
     <select id="cmbgpoactual" name="cmbgpoactual">
       <option value="0">Seleccione Grupo Actual</option>
       <?php
-        $result = mysqli_query( $dbc, "SELECT * FROM grupos WHERE id_grupo <> 0 ORDER BY descripcion ASC" );
+        $result = mysqli_query( $dbc, "SELECT * FROM ctas_grupos WHERE id_grupo <> 0 ORDER BY descripcion ASC" );
         while ( $row = mysqli_fetch_array( $result ) )
           echo '<option value="' . $row['id_grupo'] . '" ' . fntcmbgpoactualSelect( $row['id_grupo'] ) .'>' . $row['descripcion'] . '</option>';
       ?>
@@ -349,7 +349,7 @@ $cmbSubdelegaciones = -1;
     <select id="cmbgponuevo" name="cmbgponuevo">
       <option value="0">Seleccione Grupo Nuevo</option>
       <?php
-        $result = mysqli_query( $dbc, "SELECT * FROM grupos WHERE id_grupo <> 0 ORDER BY descripcion ASC" );
+        $result = mysqli_query( $dbc, "SELECT * FROM ctas_grupos WHERE id_grupo <> 0 ORDER BY descripcion ASC" );
         while ( $row = mysqli_fetch_array( $result ) )
           echo '<option value="' . $row['id_grupo'] . '" ' . fntcmbgponuevoSelect( $row['id_grupo'] ) .'>' . $row['descripcion'] . '</option>';
       ?>

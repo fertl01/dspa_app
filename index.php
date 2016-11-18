@@ -15,15 +15,33 @@
   // Connect to the database 
   $dbc = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME); 
 
+  /* check connection */
+  if (mysqli_connect_errno()) {
+      printf("Connect failed: %s\n", mysqli_connect_error());
+      exit();
+  }
+
+  /* change character set to utf8 */
+  if (!$dbc->set_charset("utf8")) {
+      printf("Error loading character set utf8: %s\n", $dbc->error);
+  } else {
+      printf("Current character set: %s\n", $dbc->character_set_name());
+  }
+
   // Retrieve the user data from MySQL
   $query = "SELECT user_id, first_name, picture 
-    FROM dspa_user 
+    FROM ctas_usuarios 
     WHERE first_name IS NOT NULL 
     ORDER BY join_date DESC LIMIT 5";
   $data = mysqli_query($dbc, $query);
 
+  if (mysqli_connect_errno()) {
+      printf("Connect failed: %s\n", mysqli_connect_error());
+      exit();
+  }
+
   // Loop through the array of user data, formatting it as HTML
-  echo '<h4>&Uacute;ltimos usuarios con perfil:</h4>';
+  echo '<h4>Últimos usuarios con perfil:</h4>';
   echo '<table>';
   while ($row = mysqli_fetch_array($data)) {
     if (is_file(MM_UPLOADPATH_PROFILE . $row['picture']) 

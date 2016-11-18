@@ -77,13 +77,13 @@
       if (!empty($first_name) && !empty($second_last_name) && !empty($gender) && !empty($birthdate) ) {
         // Only set the picture column if there is a new picture
         if (!empty($new_picture)) {
-          $query = "UPDATE dspa_user SET first_name = '$first_name', " .
+          $query = "UPDATE ctas_usuarios SET first_name = '$first_name', " .
             " first_last_name = '$first_last_name', second_last_name = '$second_last_name', " .
             " gender = '$gender', birthdate = '$birthdate', picture = '$timetime $new_picture' " .
             " WHERE user_id = '" . $_SESSION['user_id'] . "'";
         }
         else {
-          $query = "UPDATE dspa_user SET first_name = '$first_name', " .
+          $query = "UPDATE ctas_usuarios SET first_name = '$first_name', " .
           " first_last_name = '$first_last_name', second_last_name = '$second_last_name', " .
           " gender = '$gender', birthdate = '$birthdate' " .
           " WHERE user_id = '" . $_SESSION['user_id'] . "'";
@@ -104,7 +104,7 @@
   else {
     // Grab the profile data from the database
     $query = "SELECT first_name, first_last_name, second_last_name, gender, birthdate, picture " .
-      " FROM dspa_user WHERE user_id = '" . $_SESSION['user_id'] . "'";
+      " FROM ctas_usuarios WHERE user_id = '" . $_SESSION['user_id'] . "'";
     $data = mysqli_query($dbc, $query);
     $row = mysqli_fetch_array($data);
 

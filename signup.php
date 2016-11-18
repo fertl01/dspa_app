@@ -16,6 +16,18 @@
   // Connect to the database
   $dbc = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
 
+  if (mysqli_connect_errno()) {
+      printf("Connect failed: %s\n", mysqli_connect_error());
+      exit();
+  }
+
+  /* change character set to utf8 */
+  if (!$dbc->set_charset("utf8")) {
+      printf("Error loading character set utf8: %s\n", $dbc->error);
+  } else {
+      printf("Current character set: %s\n", $dbc->character_set_name());
+  }
+
   if (isset($_POST['submit'])) {
     // Grab the profile data from the POST
     $username = mysqli_real_escape_string($dbc, trim($_POST['username']));

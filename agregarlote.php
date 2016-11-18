@@ -33,7 +33,7 @@
 
     if ( !empty($comentario) && !empty($new_lote) ) {
 
-      $query = "INSERT INTO lotes 
+      $query = "INSERT INTO ctas_lotes 
         ( lote_anio, fecha_creacion, fecha_modificacion, comentario, user_id )
         VALUES 
         ( '$new_lote', NOW(), NOW(), '$comentario', " . $_SESSION['user_id'] . ")";

@@ -26,14 +26,14 @@
   //Mostrar lotes
     
   // Obtener los últimos lotes capturados al momento
-  $query = "SELECT lotes.id_lote, lotes.lote_anio, 
-    lotes.fecha_modificacion, lotes.fecha_creacion, lotes.comentario,
-    (SELECT COUNT(*) FROM solicitudes WHERE solicitudes.id_lote = lotes.id_lote) AS num_solicitudes,
-    CONCAT(dspa_user.first_name, ' ', dspa_user.first_last_name) AS creado_por, lotes.num_oficio_ca, 
-    lotes.fecha_oficio_ca, lotes.num_ticket_mesa, lotes.fecha_atendido
-    FROM lotes, dspa_user
-    WHERE lotes.user_id = dspa_user.user_id
-    ORDER BY lotes.fecha_modificacion DESC LIMIT 20";
+  $query = "SELECT ctas_lotes.id_lote, ctas_lotes.lote_anio, 
+    ctas_lotes.fecha_modificacion, ctas_lotes.fecha_creacion, ctas_lotes.comentario,
+    (SELECT COUNT(*) FROM ctas_solicitudes WHERE ctas_solicitudes.id_lote = ctas_lotes.id_lote) AS num_solicitudes,
+    CONCAT(ctas_usuarios.first_name, ' ', ctas_usuarios.first_last_name) AS creado_por, ctas_lotes.num_oficio_ca, 
+    ctas_lotes.fecha_oficio_ca, ctas_lotes.num_ticket_mesa, ctas_lotes.fecha_atendido
+    FROM ctas_lotes, ctas_usuarios
+    WHERE ctas_lotes.user_id = ctas_usuarios.user_id
+    ORDER BY ctas_lotes.fecha_modificacion DESC LIMIT 20";
 
   $data = mysqli_query($dbc, $query);
 
@@ -44,7 +44,7 @@
   readfile($mi_pdf);
   */
 
-  echo '<p class="titulo1">&Uacute;ltimos 20 lotes</p>';
+  echo '<p class="titulo1">Últimos 20 lotes</p>';
   
   //$t=time();
   //echo($t . "<br>");
@@ -109,15 +109,15 @@
 
   //Mostrar valijas
   // Obtener todas las valijas capturadas al momento
-  $query = "SELECT valijas.id_valija, valijas.delegacion AS num_del, delegaciones.descripcion AS delegacion_descripcion, 
-    valijas.num_oficio_ca, valijas.fecha_recepcion_ca, valijas.num_oficio_del, 
-    valijas.fecha_valija_del, valijas.comentario, valijas.archivo,
-    (SELECT COUNT(*) FROM solicitudes WHERE solicitudes.id_valija = valijas.id_valija) AS num_solicitudes,
-    CONCAT(dspa_user.first_name, ' ', dspa_user.first_last_name) AS creada_por
-  FROM valijas, delegaciones, dspa_user
-  WHERE valijas.delegacion = delegaciones.delegacion 
-  AND   valijas.user_id = dspa_user.user_id
-  ORDER BY valijas.fecha_captura_ca DESC LIMIT 10";
+  $query = "SELECT ctas_valijas.id_valija, ctas_valijas.delegacion AS num_del, ctas_delegaciones.descripcion AS delegacion_descripcion, 
+    ctas_valijas.num_oficio_ca, ctas_valijas.fecha_recepcion_ca, ctas_valijas.num_oficio_del, 
+    ctas_valijas.fecha_valija_del, ctas_valijas.comentario, ctas_valijas.archivo,
+    (SELECT COUNT(*) FROM ctas_solicitudes WHERE ctas_solicitudes.id_valija = ctas_valijas.id_valija) AS num_solicitudes,
+    CONCAT(ctas_usuarios.first_name, ' ', ctas_usuarios.first_last_name) AS creada_por
+  FROM ctas_valijas, ctas_delegaciones, ctas_usuarios
+  WHERE ctas_valijas.delegacion = ctas_delegaciones.delegacion 
+  AND   ctas_valijas.user_id = ctas_usuarios.user_id
+  ORDER BY ctas_valijas.fecha_captura_ca DESC LIMIT 300";
 
   $data = mysqli_query($dbc, $query);
 
@@ -177,42 +177,42 @@
   //Mostrar solicitudes
   // Obtener todas las solicitudes capturadas al momento para el último lote modificado
   $query = "SELECT 
-    solicitudes.id_solicitud, solicitudes.id_valija, valijas.num_oficio_ca, 
-    solicitudes.fecha_captura_ca, solicitudes.fecha_solicitud_del, solicitudes.fecha_modificacion,
-    lotes.lote_anio AS num_lote_anio, 
-    solicitudes.delegacion AS num_del, delegaciones.descripcion AS delegacion_descripcion, 
-    solicitudes.subdelegacion AS num_subdel, subdelegaciones.descripcion AS subdelegacion_descripcion, 
-    solicitudes.nombre, solicitudes.primer_apellido, solicitudes.segundo_apellido, 
-    solicitudes.matricula, solicitudes.curp, solicitudes.curp_correcta, solicitudes.cargo, solicitudes.usuario, 
-    movimientos.descripcion AS movimiento_descripcion, 
+    ctas_solicitudes.id_solicitud, ctas_solicitudes.id_valija, ctas_valijas.num_oficio_ca, 
+    ctas_solicitudes.fecha_captura_ca, ctas_solicitudes.fecha_solicitud_del, ctas_solicitudes.fecha_modificacion,
+    ctas_lotes.lote_anio AS num_lote_anio, 
+    ctas_solicitudes.delegacion AS num_del, ctas_delegaciones.descripcion AS delegacion_descripcion, 
+    ctas_solicitudes.subdelegacion AS num_subdel, ctas_subdelegaciones.descripcion AS subdelegacion_descripcion, 
+    ctas_solicitudes.nombre, ctas_solicitudes.primer_apellido, ctas_solicitudes.segundo_apellido, 
+    ctas_solicitudes.matricula, ctas_solicitudes.curp, ctas_solicitudes.curp_correcta, ctas_solicitudes.cargo, ctas_solicitudes.usuario, 
+    ctas_movimientos.descripcion AS movimiento_descripcion, 
     grupos1.descripcion AS grupo_nuevo, grupos2.descripcion AS grupo_actual, 
-    solicitudes.comentario, solicitudes.rechazado, solicitudes.archivo,
-    CONCAT(dspa_user.first_name, ' ', dspa_user.first_last_name) AS creada_por
-    FROM solicitudes, valijas, lotes, delegaciones, subdelegaciones, movimientos, grupos grupos1, grupos grupos2, dspa_user
-    WHERE solicitudes.id_lote       = lotes.id_lote
-    AND   solicitudes.id_valija     = valijas.id_valija
-    AND   solicitudes.delegacion    = subdelegaciones.delegacion
-    AND   solicitudes.subdelegacion = subdelegaciones.subdelegacion
-    AND   solicitudes.delegacion    = delegaciones.delegacion
-    AND   solicitudes.id_movimiento = movimientos.id_movimiento
-    AND   solicitudes.id_grupo_nuevo= grupos1.id_grupo
-    AND   solicitudes.id_grupo_actual= grupos2.id_grupo
-    AND   solicitudes.user_id = dspa_user.user_id
-    AND   solicitudes.id_lote = (SELECT id_lote from lotes ORDER BY fecha_creacion DESC LIMIT 1)
-    ORDER BY solicitudes.usuario ASC, solicitudes.fecha_modificacion DESC, solicitudes.usuario ASC";
-    //ORDER BY solicitudes.id_solicitud DESC, solicitudes.usuario ASC, solicitudes.fecha_modificacion DESC";
-    //ORDER BY solicitudes.id_movimiento ASC, solicitudes.usuario ASC, solicitudes.fecha_modificacion DESC, solicitudes.usuario ASC";
-    //ORDER BY solicitudes.id_movimiento ASC, solicitudes.usuario ASC, solicitudes.fecha_modificacion DESC, solicitudes.id_movimiento ASC, solicitudes.usuario ASC";
-    //AND   solicitudes.id_lote = 83
-    //AND   solicitudes.rechazado <> 1
+    ctas_solicitudes.comentario, ctas_solicitudes.rechazado, ctas_solicitudes.archivo,
+    CONCAT(ctas_usuarios.first_name, ' ', ctas_usuarios.first_last_name) AS creada_por
+    FROM ctas_solicitudes, ctas_valijas, ctas_lotes, ctas_delegaciones, ctas_subdelegaciones, ctas_movimientos, ctas_grupos grupos1, ctas_grupos grupos2, ctas_usuarios
+    WHERE ctas_solicitudes.id_lote       = ctas_lotes.id_lote
+    AND   ctas_solicitudes.id_valija     = ctas_valijas.id_valija
+    AND   ctas_solicitudes.delegacion    = ctas_subdelegaciones.delegacion
+    AND   ctas_solicitudes.subdelegacion = ctas_subdelegaciones.subdelegacion
+    AND   ctas_solicitudes.delegacion    = ctas_delegaciones.delegacion
+    AND   ctas_solicitudes.id_movimiento = ctas_movimientos.id_movimiento
+    AND   ctas_solicitudes.id_grupo_nuevo= grupos1.id_grupo
+    AND   ctas_solicitudes.id_grupo_actual= grupos2.id_grupo
+    AND   ctas_solicitudes.user_id = ctas_usuarios.user_id
+    AND   ctas_solicitudes.id_lote = 82
+    ORDER BY ctas_solicitudes.usuario ASC, ctas_solicitudes.fecha_modificacion DESC, ctas_solicitudes.usuario ASC";
+    //ORDER BY ctas_solicitudes.id_solicitud DESC, ctas_solicitudes.usuario ASC, ctas_solicitudes.fecha_modificacion DESC";
+    //AND   ctas_solicitudes.id_lote = (SELECT id_lote from ctas_lotes ORDER BY fecha_creacion DESC LIMIT 1)
+    //ORDER BY ctas_solicitudes.id_movimiento ASC, ctas_solicitudes.usuario ASC, ctas_solicitudes.fecha_modificacion DESC, ctas_solicitudes.usuario ASC";
+    //ORDER BY ctas_solicitudes.id_movimiento ASC, ctas_solicitudes.usuario ASC, ctas_solicitudes.fecha_modificacion DESC, ctas_solicitudes.id_movimiento ASC, ctas_solicitudes.usuario ASC";
+    //AND   ctas_solicitudes.rechazado <> 1
 
 
     
     
     
-    //movimientos.descripcion, solicitudes.usuario,
-    //AND   solicitudes.rechazado <> 1
-    //AND   solicitudes.rechazado <> 1
+    //movimientos.descripcion, ctas_solicitudes.usuario,
+    //AND   ctas_solicitudes.rechazado <> 1
+    //AND   ctas_solicitudes.rechazado <> 1
   $data = mysqli_query($dbc, $query);
 
   echo '<p class="titulo1">Solicitudes del &uacute;ltimo lote</p>';
@@ -287,41 +287,41 @@
 //Mostrar solicitudes del penúltimo lote
   // Obtener todas las solicitudes capturadas al momento para el penúltimo lote modificado
   $query = "SELECT 
-    solicitudes.id_solicitud, solicitudes.id_valija, valijas.num_oficio_ca, 
-    solicitudes.fecha_captura_ca, solicitudes.fecha_solicitud_del, solicitudes.fecha_modificacion,
-    lotes.lote_anio AS num_lote_anio, 
-    solicitudes.delegacion AS num_del, delegaciones.descripcion AS delegacion_descripcion, 
-    solicitudes.subdelegacion AS num_subdel, subdelegaciones.descripcion AS subdelegacion_descripcion, 
-    solicitudes.nombre, solicitudes.primer_apellido, solicitudes.segundo_apellido, 
-    solicitudes.matricula, solicitudes.curp, solicitudes.curp_correcta, solicitudes.cargo, solicitudes.usuario, 
-    movimientos.descripcion AS movimiento_descripcion, 
+    ctas_solicitudes.id_solicitud, ctas_solicitudes.id_valija, ctas_valijas.num_oficio_ca, 
+    ctas_solicitudes.fecha_captura_ca, ctas_solicitudes.fecha_solicitud_del, ctas_solicitudes.fecha_modificacion,
+    ctas_lotes.lote_anio AS num_lote_anio, 
+    ctas_solicitudes.delegacion AS num_del, ctas_delegaciones.descripcion AS delegacion_descripcion, 
+    ctas_solicitudes.subdelegacion AS num_subdel, ctas_subdelegaciones.descripcion AS subdelegacion_descripcion, 
+    ctas_solicitudes.nombre, ctas_solicitudes.primer_apellido, ctas_solicitudes.segundo_apellido, 
+    ctas_solicitudes.matricula, ctas_solicitudes.curp, ctas_solicitudes.curp_correcta, ctas_solicitudes.cargo, ctas_solicitudes.usuario, 
+    ctas_movimientos.descripcion AS movimiento_descripcion, 
     grupos1.descripcion AS grupo_nuevo, grupos2.descripcion AS grupo_actual, 
-    solicitudes.comentario, solicitudes.rechazado, solicitudes.archivo,
-    CONCAT(dspa_user.first_name, ' ', dspa_user.first_last_name) AS creada_por
-    FROM solicitudes, valijas, lotes, delegaciones, subdelegaciones, movimientos, grupos grupos1, grupos grupos2, dspa_user
-    WHERE solicitudes.id_lote       = lotes.id_lote
-    AND   solicitudes.id_valija     = valijas.id_valija
-    AND   solicitudes.delegacion    = subdelegaciones.delegacion
-    AND   solicitudes.subdelegacion = subdelegaciones.subdelegacion
-    AND   solicitudes.delegacion    = delegaciones.delegacion
-    AND   solicitudes.id_movimiento = movimientos.id_movimiento
-    AND   solicitudes.id_grupo_nuevo= grupos1.id_grupo
-    AND   solicitudes.id_grupo_actual= grupos2.id_grupo
-    AND   solicitudes.user_id = dspa_user.user_id
-    AND   solicitudes.id_lote = (SELECT id_lote - 1 from lotes ORDER BY fecha_creacion DESC LIMIT 1)
-    ORDER BY solicitudes.usuario ASC, solicitudes.fecha_modificacion DESC, solicitudes.id_movimiento ASC";
-    //ORDER BY solicitudes.id_movimiento ASC, solicitudes.usuario ASC, solicitudes.fecha_modificacion DESC";
-    //AND   solicitudes.rechazado <> 1
+    ctas_solicitudes.comentario, ctas_solicitudes.rechazado, ctas_solicitudes.archivo,
+    CONCAT(ctas_usuarios.first_name, ' ', ctas_usuarios.first_last_name) AS creada_por
+    FROM ctas_solicitudes, ctas_valijas, ctas_lotes, ctas_delegaciones, ctas_subdelegaciones, ctas_movimientos, ctas_grupos grupos1, ctas_grupos grupos2, ctas_usuarios
+    WHERE ctas_solicitudes.id_lote       = ctas_lotes.id_lote
+    AND   ctas_solicitudes.id_valija     = ctas_valijas.id_valija
+    AND   ctas_solicitudes.delegacion    = ctas_subdelegaciones.delegacion
+    AND   ctas_solicitudes.subdelegacion = ctas_subdelegaciones.subdelegacion
+    AND   ctas_solicitudes.delegacion    = ctas_delegaciones.delegacion
+    AND   ctas_solicitudes.id_movimiento = ctas_movimientos.id_movimiento
+    AND   ctas_solicitudes.id_grupo_nuevo= grupos1.id_grupo
+    AND   ctas_solicitudes.id_grupo_actual= grupos2.id_grupo
+    AND   ctas_solicitudes.user_id = ctas_usuarios.user_id
+    AND   ctas_solicitudes.id_lote = (SELECT id_lote - 1 from ctas_lotes ORDER BY fecha_creacion DESC LIMIT 1)
+    ORDER BY ctas_solicitudes.usuario ASC, ctas_solicitudes.fecha_modificacion DESC, ctas_solicitudes.id_movimiento ASC";
+    //ORDER BY ctas_solicitudes.id_movimiento ASC, ctas_solicitudes.usuario ASC, ctas_solicitudes.fecha_modificacion DESC";
+    //AND   ctas_solicitudes.rechazado <> 1
     
-    //AND   solicitudes.id_lote = 79
-    //AND   solicitudes.id_movimiento=2
-    //ORDER BY solicitudes.id_solicitud DESC, solicitudes.usuario ASC, solicitudes.fecha_modificacion DESC";
+    //AND   ctas_solicitudes.id_lote = 79
+    //AND   ctas_solicitudes.id_movimiento=2
+    //ORDER BY ctas_solicitudes.id_solicitud DESC, ctas_solicitudes.usuario ASC, ctas_solicitudes.fecha_modificacion DESC";
     
     
-    //movimientos.descripcion, solicitudes.usuario,
-    //AND   solicitudes.rechazado <> 1
-    //AND   solicitudes.id_lote = 4
-    //AND   solicitudes.rechazado <> 1
+    //ctas_movimientos.descripcion, ctas_solicitudes.usuario,
+    //AND   ctas_solicitudes.rechazado <> 1
+    //AND   ctas_solicitudes.id_lote = 4
+    //AND   ctas_solicitudes.rechazado <> 1
   $data = mysqli_query($dbc, $query);
 
   echo '<p class="titulo1">Solicitudes del pen&uacute;ltimo lote</p>';
