@@ -1,6 +1,6 @@
 <?php
   // Define application constants
-	define('MM_APPNAME', 'App DSPA');
+	define('MM_APPNAME', 'Aplicaciones DSPA');
 
 	define('MM_UPLOADPATH_VAL', 'files/');
 	define('MM_UPLOADPATH_CTASSINDO', 'filesctasSINDO/');
@@ -28,5 +28,12 @@
   //define('MM_FILE', 'NOT_ACR_2015_05_02.TXT');       // Nombre de archivo
 	//define('MM_CANTIDADREGISTROSESTUDIANTES', 50);      // 4 Mb | 4,096 Kb | 4,194,304 bytes
 
-	define('MM_MAXVALIJAS', 30) //Define el número de valijas a mostrar en el combo en agregarsolicitud.php
+	define('MM_MAXVALIJAS', 30); //Define el número de valijas a mostrar en el combo en agregarsolicitud.php
+
+	//Variables del Captcha
+	define('CAPTCHA_NUMCHARS', 6);  // number of characters in pass-phrase
+	define('CAPTCHA_WIDTH', 100);   // width of image. Add more width if increase CAPTCHA_NUMCHARS
+	define('CAPTCHA_HEIGHT', 30);   // height of image. Add more height if increase CAPTCHA_NUMCHARS
+	define('CAPTCHA_NUMDOTS', 100);   // dots in the image. Add more height if increase CAPTCHA_NUMCHARS
+	define('CAPTCHA_NUMLINES', 4);   // lines in the image. Add more height if increase CAPTCHA_NUMCHARS
 ?>
