@@ -12,10 +12,6 @@
   // Show the navigation menu
   require_once('navmenu.php');
 
-   // Insert the page header
-  $page_title = 'Iniciar sesión';
-  require_once('header.php');
-
   // Clear the error message
   $error_msg = "";
 

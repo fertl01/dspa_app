@@ -2,6 +2,10 @@
   // Define application constants
 	define('MM_APPNAME', 'Aplicaciones DSPA');
 
+	// Conectarse a la BD
+	//define('MM_DBC', mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+    //$dbc = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
+
 	define('MM_UPLOADPATH_VAL', 'files/');
 	define('MM_UPLOADPATH_CTASSINDO', 'filesctasSINDO/');
 	define('MM_UPLOADPATH_PROFILE', 'imagesprofile/');
