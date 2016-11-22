@@ -20,9 +20,11 @@
 
 	$dbc = mysqli_connect( DB_HOST, DB_USER, DB_PASSWORD, DB_NAME );
 
-	$result = mysqli_query( $dbc, "SELECT * FROM ctas_subdelegaciones 
+	$result = mysqli_query( $dbc, "SELECT * 
+									FROM ctas_subdelegaciones 
 									WHERE delegacion = $id_delegacion
 									ORDER BY subdelegacion");
+
 	echo '<option value="-1">Seleccione Subdelegaci&oacute;n</option>';
 	while( $row = mysqli_fetch_array( $result ) ) {
 		echo '<option value="' . $row['subdelegacion'] . '" ' . subdelegacionSelected( $row['subdelegacion'] ) . '>' . $row['subdelegacion'] . ' - ' . $row['descripcion'] . '</option>';
