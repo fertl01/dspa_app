@@ -1,3 +1,11 @@
+<!-- Dropdown Structure -->
+<ul id="dropdown1" class="dropdown-content">
+  <li><a href="viewprofile.php">Ver Perfil</a></li>
+  <li><a href="editprofile.php">Editar Perfil</a></li>
+  <li class="divider"></li>
+  <li><a href="logout.php">Cerrar Sesión (<?php echo $_SESSION['username']; ?>)</a></li>
+</ul>
+
 <nav class="light-blue lighten-1" role="navigation">
   <div class="nav-wrapper container">
     <!-- <a href="#" class="brand-logo">Logo</a> -->
@@ -6,16 +14,19 @@
     <?php
     //Si ha iniciado sesión ...
       if ( isset( $_SESSION['username'] ) ) {
-        echo '<li><a href="index.php">Inicio</a></li>';
-        echo '<li><a href="viewprofile.php">Ver Perfil</a></li>';
-        echo '<li><a href="editprofile.php">Editar Perfil</a></li>';
-        echo '<li><a href="indexCuentasSINDO.php">Gestión Cuentas SINDO</a></li>';
-        echo '<li><a href="logout.php">Cerrar Sesión (' . $_SESSION['username'] . ')</a></li>';
+    ?>
+        <li><a href="index.php">Inicio</a></li>
+        <li><a href="indexCuentasSINDO.php">Gestión Cuentas SINDO</a></li>
+        <!-- Dropdown Trigger -->
+        <li><a class="dropdown-button" href="#!" data-activates="dropdown1">Opciones de sesión<i class="material-icons right">arrow_drop_down</i></a></li>
+    <?php
       }
       else {
-        echo '<li><a href="index.php">Home</a></li>';
-        echo '<li><a href="login.php">Iniciar sesión</a></li>';
-        echo '<li><a href="signup.php">Registrar nuevo usuario</a></li>';
+    ?>
+        <li><a href="index.php">Home</a></li>
+        <li><a href="login.php">Iniciar sesión</a></li>
+        <li><a href="signup.php">Registrar nuevo usuario</a></li>
+    <?php
       }
     ?>
     </ul>

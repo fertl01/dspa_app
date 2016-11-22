@@ -40,6 +40,8 @@
               <div class="section">
                 <i class="material-icons prefix">account_circle</i>
                 <input placeholder="CURP" type="text" length="18" name="username" value="<?php if ( !empty( $user_username ) ) echo $user_username; ?>" />
+              </div>
+              <div class="section">
                 <i class="material-icons prefix">vpn_key</i>
                 <input placeholder="Contraseña" type="password" name="password" />
                 <i class="material-icons prefix">dialpad</i>
