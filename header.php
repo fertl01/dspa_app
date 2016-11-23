@@ -29,16 +29,17 @@
 		  });
 
 		$('document').ready(function() {
-		        $( '#cmbDelegaciones' ).change( 
-		        	function() {
-						var id = $('#cmbDelegaciones').val();
-						$.get('subdelegaciones.php', { param_id:id } )
-						.done( 	function( data ) {
-								$( '#cmbSubdelegaciones' ).html( data );
-								$('select').material_select();
-							} )
-				} )
-			} )
+	        $( '#cmbDelegaciones' ).change( 
+	        	function() {
+					var id = $('#cmbDelegaciones').val();
+					$.get('subdelegaciones.php', { param_id:id } )
+					.done( 	function( data ) {
+						$( '#cmbSubdelegaciones' ).html( data );
+						$('select').material_select();
+					} )
+				} 
+			)
+		} )
 
 	    </script>
 </head>

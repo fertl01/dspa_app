@@ -198,10 +198,11 @@
     AND   ctas_solicitudes.id_grupo_nuevo= grupos1.id_grupo
     AND   ctas_solicitudes.id_grupo_actual= grupos2.id_grupo
     AND   ctas_solicitudes.user_id = ctas_usuarios.user_id
-    AND   ctas_solicitudes.id_lote = 82
-    ORDER BY ctas_solicitudes.usuario ASC, ctas_solicitudes.fecha_modificacion DESC, ctas_solicitudes.usuario ASC";
-    //ORDER BY ctas_solicitudes.id_solicitud DESC, ctas_solicitudes.usuario ASC, ctas_solicitudes.fecha_modificacion DESC";
-    //AND   ctas_solicitudes.id_lote = (SELECT id_lote from ctas_lotes ORDER BY fecha_creacion DESC LIMIT 1)
+    AND   ctas_solicitudes.id_lote = (SELECT id_lote from ctas_lotes ORDER BY fecha_creacion DESC LIMIT 1)
+    ORDER BY ctas_solicitudes.id_solicitud DESC, ctas_solicitudes.usuario ASC, ctas_solicitudes.fecha_modificacion DESC";
+    
+    //ORDER BY ctas_solicitudes.usuario ASC, ctas_solicitudes.fecha_modificacion DESC, ctas_solicitudes.usuario ASC";
+    //AND   ctas_solicitudes.id_lote = 82
     //ORDER BY ctas_solicitudes.id_movimiento ASC, ctas_solicitudes.usuario ASC, ctas_solicitudes.fecha_modificacion DESC, ctas_solicitudes.usuario ASC";
     //ORDER BY ctas_solicitudes.id_movimiento ASC, ctas_solicitudes.usuario ASC, ctas_solicitudes.fecha_modificacion DESC, ctas_solicitudes.id_movimiento ASC, ctas_solicitudes.usuario ASC";
     //AND   ctas_solicitudes.rechazado <> 1
