@@ -431,17 +431,30 @@
                                         comentario, rechazado, archivo, user_id )
                                     VALUES 
                                     ( '$cmbValijas', '$cmbLotes',
-                                      '$fecha_solicitud_del',
+                                      STR_TO_DATE('$fecha_solicitud_del', '%d/%m/%Y'),
                                       '$cmbDelegaciones', '$cmbSubdelegaciones', 
                                       '$nombre', '$primer_apellido', '$segundo_apellido', 
                                       '$matricula', '$curp',
                                       '$usuario', '$cmbtipomovimiento', '$cmbgponuevo', '$cmbgpoactual',
                                       '$comentario', 0, '$timetime $new_file', " . $_SESSION['user_id'] . " )";
                           mysqli_query( $dbc, $query );
-                          echo '<p class="nota"><strong>La nueva solicitud ha sido creada exitosamente.</strong></p>';
-                          echo '<p class="titulo2">Puede agregar una <a href="agregarsolicitud.php">nueva solicitud</a></p>';
-                          echo '<p class="titulo2">Agregar <a href="agregarvalija.php">nueva valija</a></p>';
-                          echo '<p>O puede regresar al <a href="indexCuentasSINDO.php">inicio</a></p>';
+
+                          $query = "SELECT LAST_INSERT_ID()";
+                          $result = mysqli_query( $dbc, $query );
+                                        
+                          $data = mysqli_query( $dbc, $query );
+
+                          if ( mysqli_num_rows( $data ) == 1 ) {
+                            // The user row was found so display the user data
+                            $row = mysqli_fetch_array($data);
+
+                          echo '<p class="nota"><strong>La nueva <a href="versolicitud.php?id_solicitud=' . $row['LAST_INSERT_ID()'] . '">solicitud</a> ha sido creada exitosamente.</strong></p>';
+
+                          }                                                        
+
+                            echo '<p class="titulo2">Puede agregar una <a href="agregarsolicitud.php">nueva solicitud</a></p>';
+                            echo '<p class="titulo2">Agregar <a href="agregarvalija.php">nueva valija</a></p>';
+                            echo '<p>O puede regresar al <a href="indexCuentasSINDO.php">inicio</a></p>';
 
                           // Clear the score data to clear the form
                           $_POST['cmbLote']    = 0;

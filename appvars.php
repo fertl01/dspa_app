@@ -32,7 +32,7 @@
   //define('MM_FILE', 'NOT_ACR_2015_05_02.TXT');       // Nombre de archivo
 	//define('MM_CANTIDADREGISTROSESTUDIANTES', 50);      // 4 Mb | 4,096 Kb | 4,194,304 bytes
 
-	define('MM_MAXVALIJAS', 30); //Define el número de valijas a mostrar en el combo en agregarsolicitud.php
+	define('MM_MAXVALIJAS', 500); //Define el número de valijas a mostrar en el combo en agregarsolicitud.php
 
 	//Variables del Captcha
 	define('CAPTCHA_NUMCHARS', 6);  // number of characters in pass-phrase
