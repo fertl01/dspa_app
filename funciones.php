@@ -60,11 +60,11 @@
   {
     if ( empty( $_POST['cmbSubdelegaciones'] ) && $_POST['cmbSubdelegaciones'] <> 0 ) {
       return "";
-      echo "nad";
+      /*echo "nad";*/
     }
     else if ( $_POST['cmbSubdelegaciones'] == $var_subdelegacion ) {
       return "selected";
-      echo "els";
+      /*echo "els";*/
     }
   }
 
@@ -81,6 +81,14 @@
     if ( empty( $_POST['cmbgpoactual'] ) )
       return "";
     else if ( $_POST['cmbgpoactual'] == $var_gpoactual )
+      return "selected";
+  }
+
+  function fntcmbcausarechazoSelect($var_causarechazo)
+  {
+    if ( empty( $_POST['cmbcausarechazo'] ) )
+      return "";
+    else if ( $_POST['cmbcausarechazo'] == $var_causarechazo )
       return "selected";
   }
 

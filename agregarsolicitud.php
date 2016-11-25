@@ -49,6 +49,7 @@
     $usuario =              mysqli_real_escape_string( $dbc, strtoupper( trim( $_POST['usuario'] ) ) );
     $cmbgponuevo =          mysqli_real_escape_string( $dbc, trim( $_POST['cmbgponuevo'] ) );
     $cmbgpoactual =         mysqli_real_escape_string( $dbc, trim( $_POST['cmbgpoactual'] ) );
+    $cmbcausarechazo =      mysqli_real_escape_string( $dbc, trim( $_POST['cmbcausarechazo'] ) );
     $comentario =           mysqli_real_escape_string( $dbc, trim( $_POST['comentario'] ) );
     $new_file =             mysqli_real_escape_string( $dbc, trim( $_FILES['new_file']['name'] ) );
     $new_file_type = $_FILES['new_file']['type'];
@@ -95,9 +96,8 @@
                                 ctas_valijas.num_oficio_ca, 
                                 ctas_valijas.user_id
                               FROM ctas_valijas, ctas_delegaciones 
-                              WHERE ctas_valijas.delegacion = ctas_delegaciones.delegacion 
-                              AND ctas_valijas.user_id = " . $_SESSION['user_id'] . 
-                              " ORDER BY ctas_valijas.id_valija DESC LIMIT " . MM_MAXVALIJAS;
+                              WHERE ctas_valijas.delegacion = ctas_delegaciones.delegacion
+                              ORDER BY ctas_valijas.id_valija DESC";
                     $result = mysqli_query( $dbc, $query );
                     while ( $row = mysqli_fetch_array( $result ) )
                       echo '<option value="' . $row['id_valija'] . '" ' . fnvalijaSelect( $row['id_valija'] ) . '>' . $row['num_oficio_ca'] . ': ' . $row['num_del'] . '-' . $row['delegacion_descripcion'] . '</option>';
@@ -108,7 +108,6 @@
 
               <div class="input-field">
                 <i class="material-icons prefix">today</i>
-                <!-- <label for="fecha_solicitud_del">Fecha de solicitud</label> -->
                 <input id="fecha_solicitud_del" required type="text" name="fecha_solicitud_del" type="date" class="datepicker picker__input" value="<?php if ( !empty( $fecha_solicitud_del ) ) echo $fecha_solicitud_del; ?>"/>
                 <label data-error="Error" for="fecha_solicitud_del">Fecha de la Solicitud</label>
               </div>
@@ -178,11 +177,6 @@
                 <label data-error="Error" for="nombre">Nombre(s)</label>
               </div>
 
-              <div class="input-field">
-                <i class="material-icons prefix">assignment_ind</i>
-                <input type="text" required class="active validate" name="matricula" id="matricula" length="32" value='<?php if ( !empty( $matricula ) ) echo $matricula; ?>'/>
-                <label data-error="Error" for="matricula">Matrícula</label>
-              </div>
 
             </div>
           </div>
@@ -191,6 +185,12 @@
         <div class="col s5">
           <div class="signup-box">
             <div class="container">
+
+              <div class="input-field">
+                <i class="material-icons prefix">assignment_ind</i>
+                <input type="text" required class="active validate" name="matricula" id="matricula" length="32" value='<?php if ( !empty( $matricula ) ) echo $matricula; ?>'/>
+                <label data-error="Error" for="matricula">Matrícula</label>
+              </div>
 
               <div class="input-field">
                 <!-- <div class="section"> -->
@@ -239,19 +239,18 @@
               </div>
 
               <div class="input-field">
-                <input type="checkbox" class="filled-in" id="filled-in-box" />
-                <label for="filled-in-box">Solicitud rechazada</label>
-                <select id="cmbgpoactual2" class="active validate" name="cmbgpoactual2">
-                  <option value="0">Seleccione Causa de Rechazo</option>
-                  <!-- <?php
+                <i class="material-icons prefix">report_problem</i>
+                <select id="cmbcausarechazo" name="cmbcausarechazo">
+                  <option value="-1">Seleccione Causa de Rechazo</option>
+                  <?php
                     $result = mysqli_query( $dbc, "SELECT * 
-                                                    FROM ctas_grupos 
-                                                    WHERE id_grupo <> 0
-                                                    ORDER BY descripcion ASC" );
+                                                    FROM ctas_causasrechazo
+                                                    ORDER BY id_causarechazo ASC" );
                     while ( $row = mysqli_fetch_array( $result ) )
-                      echo '<option value="' . $row['id_grupo'] . '" ' . fntcmbgpoactualSelect( $row['id_grupo'] ) .'>' . $row['descripcion'] . '</option>';
-                  ?> -->
+                      echo '<option value="' . $row['id_causarechazo'] . '" ' . fntcmbcausarechazoSelect( $row['id_causarechazo'] ) .'>' . $row['id_causarechazo'] . ' - ' . $row['descripcion'] . '</option>';
+                  ?>
                 </select>
+                <label>Causa de Rechazo</label>
               </div>
                   
               <div class="input-field">
@@ -401,6 +400,11 @@
                   }
                 }
 
+                if ( $cmbcausarechazo == -1 ) {
+                  echo '<p class="error">Olvidaste capturar Causa de Rechazo</p>';
+                  $output_form = 'yes';
+                }
+
                 if ( empty( $new_file ) ) {
                   echo '<p class="error">Olvidaste adjuntar un Archivo.</p>';
                   $output_form = 'yes';
@@ -428,7 +432,7 @@
                                         delegacion, subdelegacion, 
                                         nombre, primer_apellido, segundo_apellido, matricula, curp, 
                                         usuario, id_movimiento, id_grupo_nuevo, id_grupo_actual,
-                                        comentario, rechazado, archivo, user_id )
+                                        comentario, id_causarechazo, archivo, user_id )
                                     VALUES 
                                     ( '$cmbValijas', '$cmbLotes',
                                       STR_TO_DATE('$fecha_solicitud_del', '%d/%m/%Y'),
@@ -436,7 +440,8 @@
                                       '$nombre', '$primer_apellido', '$segundo_apellido', 
                                       '$matricula', '$curp',
                                       '$usuario', '$cmbtipomovimiento', '$cmbgponuevo', '$cmbgpoactual',
-                                      '$comentario', 0, '$timetime $new_file', " . $_SESSION['user_id'] . " )";
+                                      '$comentario', $cmbcausarechazo, '$timetime $new_file', " . $_SESSION['user_id'] . " )";
+                          //echo $query;
                           mysqli_query( $dbc, $query );
 
                           $query = "SELECT LAST_INSERT_ID()";
@@ -472,6 +477,7 @@
                           $_POST['usuario'] = "";
                           $_POST['cmbgpoactual'] = 0;
                           $_POST['cmbgponuevo'] = 0;
+                          $_POST['cmbcausarechazo'] = -1;
                           $_POST['comentario'] = "";
                           $_POST['new_file'] = "";
 
