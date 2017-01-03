@@ -56,7 +56,7 @@
         </div>
         <div class="row">
           <div class="login-box">
-            <h6 align="center">¿No tienes cuenta? <a href="signup.php">Regístrate aquí</a></h6>
+            <h6 align="center">¿No tienes cuenta? <a href="index.php">Regístrate aquí</a></h6>
           </div>
         </div>
       </div>
@@ -84,7 +84,7 @@
                         if ( !$dbc->set_charset( "utf8" ) ) 
                             printf( "Error loading character set utf8: %s\n", $dbc->error );
                         else
-                            printf( "Current character set: %s\n", $dbc->character_set_name() );
+                            /*printf( "Current character set: %s\n", $dbc->character_set_name() );*/
                           
                         // Grab the user-entered log-in data
                         $user_username = mysqli_real_escape_string($dbc, trim($_POST['username']));

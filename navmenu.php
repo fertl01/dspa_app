@@ -17,6 +17,8 @@
     ?>
         <li><a href="index.php">Inicio</a></li>
         <li><a href="indexCuentasSINDO.php">Gestión Cuentas SINDO</a></li>
+        <li><a href="agregarlote.php">Agregar Lote</a></li>
+        <li><a href="agregarsolicitud.php">Agregar Solicitud</a></li>
         <!-- Dropdown Trigger -->
         <li><a class="dropdown-button" href="#!" data-activates="dropdown1">Opciones de sesión<i class="material-icons right">arrow_drop_down</i></a></li>
     <?php

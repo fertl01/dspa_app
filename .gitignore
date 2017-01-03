@@ -63,6 +63,13 @@ sql/
 tmp/
 filesctasSINDO/*
 
+new_app/
+parallax-template/
+parallax-template2/
+starter-template/
+starter-template2/
+
+
 !imagesprofile/nopic.jpg
 !filesctasSINDO/Blank_Document.pdf
 

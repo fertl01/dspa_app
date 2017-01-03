@@ -117,7 +117,8 @@
   FROM ctas_valijas, ctas_delegaciones, ctas_usuarios
   WHERE ctas_valijas.delegacion = ctas_delegaciones.delegacion 
   AND   ctas_valijas.user_id = ctas_usuarios.user_id
-  ORDER BY ctas_valijas.fecha_captura_ca DESC LIMIT 300";
+  ORDER BY ctas_valijas.id_valija DESC LIMIT 500";
+  //ORDER BY ctas_valijas.fecha_captura_ca DESC LIMIT 300";
 
   $data = mysqli_query($dbc, $query);
 
@@ -177,18 +178,19 @@
   //Mostrar solicitudes
   // Obtener todas las solicitudes capturadas al momento para el último lote modificado
   $query = "SELECT 
-    ctas_solicitudes.id_solicitud, ctas_solicitudes.id_valija, ctas_valijas.num_oficio_ca, 
+    ctas_solicitudes.id_solicitud, ctas_solicitudes.id_valija, ctas_valijas.num_oficio_ca, ctas_valijas.fecha_recepcion_ca, 
     ctas_solicitudes.fecha_captura_ca, ctas_solicitudes.fecha_solicitud_del, ctas_solicitudes.fecha_modificacion,
     ctas_lotes.lote_anio AS num_lote_anio, 
     ctas_solicitudes.delegacion AS num_del, ctas_delegaciones.descripcion AS delegacion_descripcion, 
+    ctas_valijas.delegacion AS num_del_val, 
     ctas_solicitudes.subdelegacion AS num_subdel, ctas_subdelegaciones.descripcion AS subdelegacion_descripcion, 
     ctas_solicitudes.nombre, ctas_solicitudes.primer_apellido, ctas_solicitudes.segundo_apellido, 
     ctas_solicitudes.matricula, ctas_solicitudes.curp, ctas_solicitudes.curp_correcta, ctas_solicitudes.cargo, ctas_solicitudes.usuario, 
     ctas_movimientos.descripcion AS movimiento_descripcion, 
     grupos1.descripcion AS grupo_nuevo, grupos2.descripcion AS grupo_actual, 
-    ctas_solicitudes.comentario, ctas_solicitudes.rechazado, ctas_solicitudes.archivo,
+    ctas_solicitudes.comentario, ctas_causasrechazo.id_causarechazo, ctas_causasrechazo.descripcion AS causa_rechazo, ctas_solicitudes.archivo,
     CONCAT(ctas_usuarios.first_name, ' ', ctas_usuarios.first_last_name) AS creada_por
-    FROM ctas_solicitudes, ctas_valijas, ctas_lotes, ctas_delegaciones, ctas_subdelegaciones, ctas_movimientos, ctas_grupos grupos1, ctas_grupos grupos2, ctas_usuarios
+    FROM ctas_solicitudes, ctas_valijas, ctas_lotes, ctas_delegaciones, ctas_subdelegaciones, ctas_movimientos, ctas_grupos grupos1, ctas_grupos grupos2, ctas_usuarios, ctas_causasrechazo
     WHERE ctas_solicitudes.id_lote       = ctas_lotes.id_lote
     AND   ctas_solicitudes.id_valija     = ctas_valijas.id_valija
     AND   ctas_solicitudes.delegacion    = ctas_subdelegaciones.delegacion
@@ -198,13 +200,17 @@
     AND   ctas_solicitudes.id_grupo_nuevo= grupos1.id_grupo
     AND   ctas_solicitudes.id_grupo_actual= grupos2.id_grupo
     AND   ctas_solicitudes.user_id = ctas_usuarios.user_id
+    AND   ctas_solicitudes.id_causarechazo = ctas_causasrechazo.id_causarechazo
     AND   ctas_solicitudes.id_lote = (SELECT id_lote from ctas_lotes ORDER BY fecha_creacion DESC LIMIT 1)
-    ORDER BY ctas_solicitudes.id_solicitud DESC, ctas_solicitudes.usuario ASC, ctas_solicitudes.fecha_modificacion DESC";
+    AND   ctas_solicitudes.id_causarechazo = 0
+    ORDER BY ctas_solicitudes.id_movimiento ASC, ctas_solicitudes.usuario ASC, ctas_solicitudes.fecha_modificacion DESC, ctas_solicitudes.id_movimiento ASC, ctas_solicitudes.usuario ASC";
+    //ORDER BY ctas_solicitudes.id_solicitud DESC, ctas_solicitudes.usuario ASC, ctas_solicitudes.fecha_modificacion DESC";
+    //ORDER BY ctas_solicitudes.usuario ASC, ctas_solicitudes.fecha_modificacion DESC, ctas_solicitudes.usuario ASC";
+    //ORDER BY ctas_solicitudes.id_movimiento ASC, ctas_solicitudes.usuario ASC, ctas_solicitudes.fecha_modificacion DESC";
     
     //ORDER BY ctas_solicitudes.usuario ASC, ctas_solicitudes.fecha_modificacion DESC, ctas_solicitudes.usuario ASC";
     //AND   ctas_solicitudes.id_lote = 82
     //ORDER BY ctas_solicitudes.id_movimiento ASC, ctas_solicitudes.usuario ASC, ctas_solicitudes.fecha_modificacion DESC, ctas_solicitudes.usuario ASC";
-    //ORDER BY ctas_solicitudes.id_movimiento ASC, ctas_solicitudes.usuario ASC, ctas_solicitudes.fecha_modificacion DESC, ctas_solicitudes.id_movimiento ASC, ctas_solicitudes.usuario ASC";
     //AND   ctas_solicitudes.rechazado <> 1
 
 
@@ -225,7 +231,7 @@
   //echo '<th># Valija</th>';
   echo '<th># de Lote</th>';
   echo '<th># &Aacute;rea de Gesti&oacute;n</th>';
-  //echo '<th>Fecha captura</th>';
+  echo '<th>Fecha Recepción CA</th>';
   echo '<th>Delegaci&oacute;n - Subdelegaci&oacute;n</th>';
   echo '<th>Nombre completo</th>';
   echo '<th>Matr&iacute;cula</th>';
@@ -234,7 +240,7 @@
   //echo '<th>Cargo</th>';
   echo '<th>Usuario</th>';
   echo '<th>Movimiento</th><th>Grupo actual</th><th>Grupo nuevo</th>';
-  echo '<th>Comentario</th><th>Rechazado</th><th>Archivo</th>';
+  echo '<th>Comentario</th><th>ID Rechazo</th><th>Archivo</th>';
   echo '<th>Creada por</th>';
   echo '</tr>';  
 
@@ -253,8 +259,8 @@
     //echo '<td class="lista">' . $row['id_valija'] . '</td>';
     echo '<td class="lista">' . $row['num_lote_anio'] . '</td>';
     echo '<td class="lista">' . $row['num_oficio_ca'] . '</td>';
-    //echo '<td class="lista">' . $row['fecha_captura_ca'] . '</td>';
-    echo '<td class="lista">(' . $row['num_del'] . ')' . $row['delegacion_descripcion'] . ' - (' . $row['num_subdel'] . ')' . $row['subdelegacion_descripcion'] . '</td>';
+    echo '<td class="lista">' . $row['fecha_recepcion_ca'] . '</td>';
+    echo '<td class="lista">' . $row['num_del_val'] . ' (' . $row['num_del'] . ')' . $row['delegacion_descripcion'] . ' - (' . $row['num_subdel'] . ')' . $row['subdelegacion_descripcion'] . '</td>';
     echo '<td class="lista">' . $row['primer_apellido'] . '-' . $row['segundo_apellido'] . '-' . $row['nombre'] . '</td>';
     //echo '<td class="lista">' . $row['primer_apellido'] . '</td>'; 
     //echo '<td class="lista">' . $row['segundo_apellido'] . '</td>'; 
@@ -268,7 +274,7 @@
     echo '<td class="lista">' . $row['grupo_actual'] . '</td>';
     echo '<td class="lista">' . $row['grupo_nuevo'] . '</td>'; 
     echo '<td class="lista">' . $row['comentario'] . '</td>';
-    echo '<td class="lista">' . $row['rechazado'] . '</td>';
+    echo '<td class="lista">' . $row['id_causarechazo'] .'-' . $row['causa_rechazo'] . '</td>';
     if (!empty($row['archivo'])) {
       echo '<td class="lista"><a href="' . MM_UPLOADPATH_CTASSINDO . '\\' . $row['archivo'] . '"  target="_new">Ver</a></td>';
     }
@@ -288,18 +294,19 @@
 //Mostrar solicitudes del penúltimo lote
   // Obtener todas las solicitudes capturadas al momento para el penúltimo lote modificado
   $query = "SELECT 
-    ctas_solicitudes.id_solicitud, ctas_solicitudes.id_valija, ctas_valijas.num_oficio_ca, 
+    ctas_solicitudes.id_solicitud, ctas_solicitudes.id_valija, ctas_valijas.num_oficio_ca, ctas_valijas.fecha_recepcion_ca, 
     ctas_solicitudes.fecha_captura_ca, ctas_solicitudes.fecha_solicitud_del, ctas_solicitudes.fecha_modificacion,
     ctas_lotes.lote_anio AS num_lote_anio, 
     ctas_solicitudes.delegacion AS num_del, ctas_delegaciones.descripcion AS delegacion_descripcion, 
+    ctas_valijas.delegacion AS num_del_val, 
     ctas_solicitudes.subdelegacion AS num_subdel, ctas_subdelegaciones.descripcion AS subdelegacion_descripcion, 
     ctas_solicitudes.nombre, ctas_solicitudes.primer_apellido, ctas_solicitudes.segundo_apellido, 
     ctas_solicitudes.matricula, ctas_solicitudes.curp, ctas_solicitudes.curp_correcta, ctas_solicitudes.cargo, ctas_solicitudes.usuario, 
     ctas_movimientos.descripcion AS movimiento_descripcion, 
     grupos1.descripcion AS grupo_nuevo, grupos2.descripcion AS grupo_actual, 
-    ctas_solicitudes.comentario, ctas_solicitudes.rechazado, ctas_solicitudes.archivo,
+    ctas_solicitudes.comentario, ctas_causasrechazo.id_causarechazo, ctas_causasrechazo.descripcion AS causa_rechazo, ctas_solicitudes.archivo,
     CONCAT(ctas_usuarios.first_name, ' ', ctas_usuarios.first_last_name) AS creada_por
-    FROM ctas_solicitudes, ctas_valijas, ctas_lotes, ctas_delegaciones, ctas_subdelegaciones, ctas_movimientos, ctas_grupos grupos1, ctas_grupos grupos2, ctas_usuarios
+    FROM ctas_solicitudes, ctas_valijas, ctas_lotes, ctas_delegaciones, ctas_subdelegaciones, ctas_movimientos, ctas_grupos grupos1, ctas_grupos grupos2, ctas_usuarios, ctas_causasrechazo
     WHERE ctas_solicitudes.id_lote       = ctas_lotes.id_lote
     AND   ctas_solicitudes.id_valija     = ctas_valijas.id_valija
     AND   ctas_solicitudes.delegacion    = ctas_subdelegaciones.delegacion
@@ -309,6 +316,7 @@
     AND   ctas_solicitudes.id_grupo_nuevo= grupos1.id_grupo
     AND   ctas_solicitudes.id_grupo_actual= grupos2.id_grupo
     AND   ctas_solicitudes.user_id = ctas_usuarios.user_id
+    AND   ctas_solicitudes.id_causarechazo = ctas_causasrechazo.id_causarechazo
     AND   ctas_solicitudes.id_lote = (SELECT id_lote - 1 from ctas_lotes ORDER BY fecha_creacion DESC LIMIT 1)
     ORDER BY ctas_solicitudes.usuario ASC, ctas_solicitudes.fecha_modificacion DESC, ctas_solicitudes.id_movimiento ASC";
     //ORDER BY ctas_solicitudes.id_movimiento ASC, ctas_solicitudes.usuario ASC, ctas_solicitudes.fecha_modificacion DESC";
@@ -334,7 +342,7 @@
   //echo '<th># Valija</th>';
   echo '<th># de Lote</th>';
   echo '<th># &Aacute;rea de Gesti&oacute;n</th>';
-  //echo '<th>Fecha captura</th>';
+  echo '<th>Fecha Recepción CA</th>';
   echo '<th>Delegaci&oacute;n - Subdelegaci&oacute;n</th>';
   echo '<th>Nombre completo</th>';
   echo '<th>Matr&iacute;cula</th>';
@@ -343,7 +351,7 @@
   //echo '<th>Cargo</th>';
   echo '<th>Usuario</th>';
   echo '<th>Movimiento</th><th>Grupo actual</th><th>Grupo nuevo</th>';
-  echo '<th>Comentario</th><th>Rechazado</th><th>Archivo</th>';
+  echo '<th>Comentario</th><th>Causa Rechazo</th><th>Archivo</th>';
   echo '<th>Creada por</th>';
   echo '</tr>';  
 
@@ -362,8 +370,8 @@
     //echo '<td class="lista">' . $row['id_valija'] . '</td>';
     echo '<td class="lista">' . $row['num_lote_anio'] . '</td>';
     echo '<td class="lista">' . $row['num_oficio_ca'] . '</td>';
-    //echo '<td class="lista">' . $row['fecha_captura_ca'] . '</td>';
-    echo '<td class="lista">(' . $row['num_del'] . ')' . $row['delegacion_descripcion'] . ' - (' . $row['num_subdel'] . ')' . $row['subdelegacion_descripcion'] . '</td>';
+    echo '<td class="lista">' . $row['fecha_recepcion_ca'] . '</td>';
+    echo '<td class="lista">' . $row['num_del_val'] . ' (' . $row['num_del'] . ')' . $row['delegacion_descripcion'] . ' - (' . $row['num_subdel'] . ')' . $row['subdelegacion_descripcion'] . '</td>';
     echo '<td class="lista">' . $row['primer_apellido'] . '-' . $row['segundo_apellido'] . '-' . $row['nombre'] . '</td>';
     //echo '<td class="lista">' . $row['primer_apellido'] . '</td>'; 
     //echo '<td class="lista">' . $row['segundo_apellido'] . '</td>'; 
@@ -377,7 +385,7 @@
     echo '<td class="lista">' . $row['grupo_actual'] . '</td>';
     echo '<td class="lista">' . $row['grupo_nuevo'] . '</td>'; 
     echo '<td class="lista">' . $row['comentario'] . '</td>';
-    echo '<td class="lista">' . $row['rechazado'] . '</td>';
+    echo '<td class="lista">' . $row['id_causarechazo'] .'-' . $row['causa_rechazo'] . '</td>';
     if (!empty($row['archivo'])) {
       echo '<td class="lista"><a href="' . MM_UPLOADPATH_CTASSINDO . '\\' . $row['archivo'] . '"  target="_new">Ver</a></td>';
     }
