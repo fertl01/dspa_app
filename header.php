@@ -5,7 +5,7 @@
   	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0"/>
 
 	<?php
-		echo '<title>' . $page_title . '</title>';
+		echo '<title>' . MM_APPNAME . '</title>';
 		header('Content-Type: text/html; charset=utf-8');
 	?>
 

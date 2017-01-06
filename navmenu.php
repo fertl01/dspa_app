@@ -9,7 +9,12 @@
 <nav class="light-blue lighten-1" role="navigation">
   <div class="nav-wrapper container">
     <!-- <a href="#" class="brand-logo">Logo</a> -->
-    <a id="logo-container" href="#" class="brand-logo">Logo</a>
+    <a id="logo-container" href="#" class="brand-logo">
+      <div class="container">
+        <img class="iphone" src="images/logoIMSStransparente2.png" />
+      </div>
+
+    </a>
     <ul class="right hide-on-med-and-down">
     <?php
     //Si ha iniciado sesión ...
