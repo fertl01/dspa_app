@@ -18,7 +18,7 @@
 
   // Make sure the user is logged in before going any further.
   if ( !isset( $_SESSION['user_id'] ) ) {
-    echo '<p class="error">Por favor <a href="login.php">inicia sesi&oacute;n</a> para acceder a esta p&aacutegina.</p>';
+    echo '<p class="error">Por favor <a href="login.php">inicia sesión</a> para acceder a esta página.</p>';
     require_once('footer.php');
     exit();
   } else {
@@ -66,28 +66,34 @@
     <section id="main-container">
       <div class="row">
 
-        <div class="col s5">
+        <div class="col s4">
           <div class="signup-box">
             <div class="container">
 
-              <div class="input-field">
+  <!--             <div class="input-field">
                 <i class="material-icons prefix">view_quilt</i>
-                <select id="cmbLotes" name="cmbLotes" disabled>
+                <select id="cmbLotes" name="cmbLotes">
                 <?php
-                  $query = "SELECT * 
+/*                  $query = "SELECT * 
                                 FROM ctas_lotes 
                                 WHERE id_lote = " . $row['id_lote'];
                       $result = mysqli_query($dbc, $query);
                       while ( $row2 = mysqli_fetch_array( $result ) )
-                          echo '<option value="' . $row2['id_lote'] . '" selected>' . $row2['lote_anio'] . '</option>';
+                          echo '<option value="' . $row2['id_lote'] . '" selected>' . $row2['lote_anio'] . '</option>';*/
                     ?>
                 </select>
                 <label>Número de Lote</label>
+              </div> -->
+
+              <div class="input-field">
+                <i class="material-icons prefix">contact</i>
+                <input type="text" required disabled class="active validate" name="user_id" id="user_id" length="50" value="<?php if ( !empty( $row['creada_por'] ) ) echo $row['creada_por']; ?>" />
+                <label data-error="Error" for="user_id">Capturada por:</label>
               </div>
 
               <div class="input-field">
                 <i class="material-icons prefix">description</i>
-                <select id="cmbValijas" name="cmbValijas" disabled>
+                <select id="cmbValijas" name="cmbValijas">
                   <!-- <option value="0">Seleccione # de Valija/Oficio</option> -->
                   <?php
                     $query = "SELECT ctas_valijas.id_valija AS id_valija2, 
@@ -109,16 +115,21 @@
                 <label>Número de Valija/Oficio</label>
               </div>
 
-              <div class="input-field">
+              <!-- <div class="input-field">
                 <i class="material-icons prefix">today</i>
                 
-                <input id="fecha_solicitud_del" disabled type="text" name="fecha_solicitud_del" type="date" format="d-m-y" class="datepicker picker__input" value="<?php if ( !empty( $row['fecha_solicitud_del'] ) ) echo $row['fecha_solicitud_del']; ?>"/>
-                <label data-error="Error" for="fecha_solicitud_del">Fecha de la Solicitud</label>
+                <input id="fecha_solicitud_del" type="text" name="fecha_solicitud_del" type="date" format="d-m-y" class="datepicker picker__input" value="<?php if ( !empty( $row['fecha_solicitud_del'] ) ) echo $row['fecha_solicitud_del']; ?>"/>
+              </div> -->
+
+              <label for="fecha_solicitud_del">Fecha solicitud:</label>
+              <div class="input-field">
+                <i class="material-icons prefix">today</i>
+                <input type="text" id="fecha_solicitud_del" name="fecha_solicitud_del" value="<?php if ( !empty( $row['fecha_solicitud_del'] ) ) echo $row['fecha_solicitud_del']; ?>"/>
               </div>
 
               <div class="input-field">
                 <i class="material-icons prefix">view_list</i>
-                <select id="cmbtipomovimiento" name="cmbtipomovimiento" disabled>
+                <select id="cmbtipomovimiento" name="cmbtipomovimiento">
                   <?php
                     $query = "SELECT * 
                               FROM ctas_movimientos
@@ -133,7 +144,7 @@
 
               <div class="input-field">
                 <i class="large material-icons prefix">business</i>
-                <select id="cmbDelegaciones" name="cmbDelegaciones" disabled>
+                <select id="cmbDelegaciones" name="cmbDelegaciones" >
                   <?php
                     $query = "SELECT * 
                               FROM ctas_delegaciones 
@@ -148,7 +159,7 @@
 
               <div class="input-field">
                 <i class="material-icons prefix">store</i>
-                <select class="active validate" id="cmbSubdelegaciones" name="cmbSubdelegaciones" disabled>
+                <select class="active validate" id="cmbSubdelegaciones" name="cmbSubdelegaciones" >
                   <?php
                     $query = "SELECT * 
                               FROM ctas_subdelegaciones 
@@ -160,8 +171,15 @@
                       echo '<option value="' . $row2['subdelegacion'] . '" selected>' . $row2['subdelegacion'] . ' - ' . $row2['descripcion'] . '</option>';
                   ?>
                 </select>
-                <label data-error="Error" for="cmbSubdelegaciones">Subdelegación IMSS</label>
               </div>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="col s4">
+          <div class="signup-box">
+            <div class="container">
 
               <div class="input-field">
                 <i class="material-icons prefix">perm_identity</i>
@@ -180,15 +198,6 @@
                 <input type="text" required disabled class="active validate" name="nombre" id="nombre" length="32" value="<?php if ( !empty( $row['nombre'] ) ) echo $row['nombre']; ?>"/>
                 <label data-error="Error" for="nombre">Nombre(s)</label>
               </div>
-
-
-            </div>
-          </div>
-        </div>
-
-        <div class="col s5">
-          <div class="signup-box">
-            <div class="container">
 
               <div class="input-field">
                 <i class="material-icons prefix">assignment_ind</i>
@@ -209,9 +218,18 @@
                 <label data-error="Error" for="usuario">Usuario</label>
               </div>
 
+
+            </div>
+          </div>
+        </div>
+
+        <div class="col s4">
+          <div class="signup-box">
+            <div class="container">
+
               <div class="input-field">
                 <i class="material-icons prefix">label_outline</i>
-                <select id="cmbgpoactual" class="active validate" name="cmbgpoactual" disabled>
+                <select id="cmbgpoactual" class="active validate" name="cmbgpoactual" >
                   <!-- <option value="0">Seleccione Grupo Actual</option> -->
                   <?php
                     $query = "SELECT * 
@@ -227,7 +245,7 @@
 
               <div class="input-field">
                 <i class="material-icons prefix">label</i>
-                <select id="cmbgponuevo" name="cmbgponuevo" disabled>
+                <select id="cmbgponuevo" name="cmbgponuevo" >
                   <?php
                     $query = "SELECT * 
                               FROM ctas_grupos 
@@ -242,7 +260,7 @@
 
               <div class="input-field">
                 <i class="material-icons prefix">report_problem</i>
-                <select id="cmbcausarechazo" name="cmbcausarechazo" disabled>
+                <select id="cmbcausarechazo" name="cmbcausarechazo" >
                   <?php
                     $query = "SELECT * 
                                                     FROM ctas_causasrechazo
@@ -273,23 +291,15 @@
                 </div>
               </div>
 
+              <?php
+/*                  if (!isset($_GET['user_id']) || ($_SESSION['user_id'] == $_GET['user_id'])) 
+                    echo '<p>¿Deseas editar esta <a href="editarsolicitud.php?id_solicitud=' . $row['id_solicitud'] . '">solicitud</a>?</p>';
+*/                ?>
+
             </div>
           </div>
         </div>
 
-        <div class="col s2">
-          <div class="input-field">
-            <i class="material-icons prefix">contact</i>
-            <input type="text" required disabled class="active validate" name="user_id" id="user_id" length="50" value="<?php if ( !empty( $row['creada_por'] ) ) echo $row['creada_por']; ?>" />
-            <label data-error="Error" for="user_id">Capturado por:</label>
-
-            <?php
-              if (!isset($_GET['user_id']) || ($_SESSION['user_id'] == $_GET['user_id'])) 
-                echo '<p>¿Deseas editar esta <a href="editarsolicitud.php?id_solicitud=' . $row['id_solicitud'] . '">solicitud</a>?</p>';
-            ?>
-
-          </div>
-        </div>
       </div>
     
   </section>

@@ -23,7 +23,7 @@
     require_once('footer.php');
     exit();
   }
-  
+
   // Connect to the database
   $dbc = mysqli_connect( DB_HOST, DB_USER, DB_PASSWORD, DB_NAME );
 
@@ -38,7 +38,8 @@
 
     $error_msg = fnConnect( $dbc );
 
-    $cmbLotes =             mysqli_real_escape_string( $dbc, trim( $_POST['cmbLotes'] ) );
+    /*$cmbLotes =             mysqli_real_escape_string( $dbc, trim( $_POST['cmbLotes'] ) );*/
+    $cmbLotes = 0;
     $cmbValijas =           mysqli_real_escape_string( $dbc, trim( $_POST['cmbValijas'] ) );
     $fecha_solicitud_del =  mysqli_real_escape_string( $dbc, trim( $_POST['fecha_solicitud_del'] ) );
     $cmbtipomovimiento =    mysqli_real_escape_string( $dbc, trim( $_POST['cmbtipomovimiento'] ) );
@@ -75,10 +76,10 @@
           if ( isset( $_POST['submit'] ) ) {
 
             //Inician validaciones
-            if ( empty( $cmbLotes ) ) {
+            /*if ( empty( $cmbLotes ) ) {
               echo '<p class="error">Olvidaste seleccionar un Lote.</p>';
               $output_form = 'yes';
-            }
+            }*/
 
             if ( empty( $cmbValijas ) ) {
               echo '<p class="error">Olvidaste seleccionar una Valija.</p>';
@@ -214,6 +215,7 @@
                                   '$matricula', '$curp',
                                   '$usuario', '$cmbtipomovimiento', '$cmbgponuevo', '$cmbgpoactual',
                                   '$comentario', $cmbcausarechazo, '$timetime $new_file', " . $_SESSION['user_id'] . " )";
+                      /*echo $query;*/
                       mysqli_query( $dbc, $query );
 
                       $query = "SELECT LAST_INSERT_ID()";
@@ -223,11 +225,14 @@
                       if ( mysqli_num_rows( $data ) == 1 ) {
                         // The user row was found so display the user data
                         $row = mysqli_fetch_array($data);
-                        echo '<p class="nota"><strong>La nueva solicitud ha sido creada exitosamente. <a href="versolicitud.php?id_solicitud=' . $row['LAST_INSERT_ID()'] . '">Ver solicitud</a></strong></p>';
-                      }                                                        
+                        echo '<p class="nota"><strong>La nueva solicitud ha sido creada exitosamente. <a target="_blank" href="versolicitud.php?id_solicitud=' . $row['LAST_INSERT_ID()'] . '">Ver solicitud</a></strong></p>';
+                      }
+                      else {
+                        echo '<p class="error"><strong>La nueva solicitud no ha podido generarse. Contactar al administrador.</strong></p>';
+                      }
 
                       echo '<p class="titulo2">Puede agregar una <a href="agregarsolicitud.php">nueva solicitud</a></p>';
-                      echo '<p class="titulo2">Agregar <a href="agregarvalija.php">nueva valija</a></p>';
+                      /*echo '<p class="titulo2">Agregar <a href="agregarvalija.php">nueva valija</a></p>';*/
                       echo '<p>O puede regresar al <a href="indexCuentasSINDO.php">inicio</a></p>';
                       // Clear the score data to clear the form
                       $_POST['cmbLote']    = 0;
@@ -278,6 +283,9 @@
             }
 
           }
+          else {
+            echo '<p class="nota"><strong>Captura todos los datos de la solcitud.</strong></p>';
+          }
 
           ?>
             
@@ -294,22 +302,22 @@
             <div class="signup-box">
               <div class="container">
 
-                <div class="input-field">
+                <!-- <div class="input-field">
                   <i class="material-icons prefix">view_quilt</i>
                   <select id="cmbLotes" name="cmbLotes">
                     <option value="0">Seleccione # de Lote</option>
                   <?php
-                    $query = "SELECT * 
+                    /*$query = "SELECT * 
                                   FROM ctas_lotes 
                                   WHERE user_id = " . $_SESSION['user_id'] . 
                                   " ORDER BY fecha_modificacion DESC;";
                         $result = mysqli_query($dbc, $query);
                         while ( $row = mysqli_fetch_array( $result ) )
-                            echo '<option value="' . $row['id_lote'] . '" ' . fnloteSelect( $row['id_lote'] ) . '>' . $row['lote_anio'] . '</option>';
+                            echo '<option value="' . $row['id_lote'] . '" ' . fnloteSelect( $row['id_lote'] ) . '>' . $row['lote_anio'] . '</option>';*/
                       ?>
                   </select>
                   <label>Número de Lote</label>
-                </div>
+                </div> -->
 
                 <div class="input-field">
                   <i class="material-icons prefix">description</i>
@@ -406,6 +414,12 @@
                   <label data-error="Error" for="nombre">Nombre(s)</label>
                 </div>
 
+                <div class="input-field">
+                  <i class="material-icons prefix">assignment_ind</i>
+                  <input type="text" required class="active validate" name="matricula" id="matricula" length="32" value='<?php if ( !empty( $matricula ) ) echo $matricula; ?>'/>
+                  <label data-error="Error" for="matricula">Matrícula</label>
+                </div>
+
               </div>
             </div>
           </div>
@@ -414,11 +428,6 @@
             <div class="signup-box">
               <div class="container">
 
-                <div class="input-field">
-                  <i class="material-icons prefix">assignment_ind</i>
-                  <input type="text" required class="active validate" name="matricula" id="matricula" length="32" value='<?php if ( !empty( $matricula ) ) echo $matricula; ?>'/>
-                  <label data-error="Error" for="matricula">Matrícula</label>
-                </div>
 
                 <div class="input-field">
                   <!-- <div class="section"> -->
