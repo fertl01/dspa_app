@@ -7,7 +7,7 @@
   require_once( 'connectvars.php' );
   
   // Insert the page header
-  $page_title = 'Gesti&oacute;n Cuentas SINDO - Capturar Solicitud';
+  $page_title = 'Gestión Cuentas SINDO - Capturar Solicitud';
   require_once( 'header.php' );
   
   // Show the navigation menu
@@ -74,12 +74,6 @@
           <?php
 
           if ( isset( $_POST['submit'] ) ) {
-
-            //Inician validaciones
-            /*if ( empty( $cmbLotes ) ) {
-              echo '<p class="error">Olvidaste seleccionar un Lote.</p>';
-              $output_form = 'yes';
-            }*/
 
             if ( empty( $cmbValijas ) ) {
               echo '<p class="error">Olvidaste seleccionar una Valija.</p>';
@@ -175,7 +169,7 @@
               }
             }
 
-            if ( $cmbcausarechazo == -1 ) {
+            if ( ( empty( $cmbcausarechazo ) || $cmbcausarechazo  == -1 ) && $cmbcausarechazo <> 0 )  {
               echo '<p class="error">Olvidaste capturar Causa de Rechazo</p>';
               $output_form = 'yes';
             }
@@ -225,15 +219,243 @@
                       if ( mysqli_num_rows( $data ) == 1 ) {
                         // The user row was found so display the user data
                         $row = mysqli_fetch_array($data);
-                        echo '<p class="nota"><strong>La nueva solicitud ha sido creada exitosamente. <a target="_blank" href="versolicitud.php?id_solicitud=' . $row['LAST_INSERT_ID()'] . '">Ver solicitud</a></strong></p>';
+                        echo '<p class="nota"><strong>¡La nueva solicitud ha sido creada correctamente!</strong></p>';
+                        echo '<p class="titulo2">¿Hubo un error? Puede EDITAR la <a href="editarsolicitud.php?id_solicitud=' . $row['LAST_INSERT_ID()'] . '">solicitud</a></p>';
+                        echo '<p class="titulo2">Puede agregar una <a href="agregarsolicitud.php">nueva solicitud</a></p>';
+                        /*echo '<p class="titulo2">Agregar <a href="agregarvalija.php">nueva valija</a></p>';*/
+                        echo '<p>O puede regresar al <a href="indexCuentasSINDO.php">inicio</a></p>';
+
+                        $query = "SELECT ctas_solicitudes.id_solicitud, ctas_solicitudes.id_valija, 
+                              ctas_solicitudes.fecha_captura_ca, ctas_solicitudes.fecha_solicitud_del, ctas_solicitudes.fecha_modificacion, ctas_solicitudes.id_lote,
+                              ctas_solicitudes.delegacion, ctas_solicitudes.subdelegacion, 
+                              ctas_solicitudes.nombre, ctas_solicitudes.primer_apellido, ctas_solicitudes.segundo_apellido, 
+                              ctas_solicitudes.matricula, ctas_solicitudes.curp, ctas_solicitudes.curp_correcta, ctas_solicitudes.cargo, ctas_solicitudes.usuario, 
+                              ctas_solicitudes.id_movimiento, ctas_solicitudes.id_grupo_actual, ctas_solicitudes.id_grupo_nuevo, 
+                              ctas_solicitudes.comentario, ctas_solicitudes.id_causarechazo, ctas_solicitudes.archivo,
+                              CONCAT(ctas_usuarios.first_name, ' ', ctas_usuarios.first_last_name) AS creada_por
+                            FROM ctas_solicitudes, ctas_grupos grupos1, ctas_grupos grupos2, ctas_usuarios
+                            WHERE ctas_solicitudes.id_grupo_nuevo= grupos1.id_grupo
+                            AND   ctas_solicitudes.id_grupo_actual= grupos2.id_grupo
+                            AND   ctas_solicitudes.user_id = ctas_usuarios.user_id ";
+
+                        $query = $query . "AND ctas_solicitudes.id_solicitud = '" . $row['LAST_INSERT_ID()'] . "'";
+                        $data = mysqli_query( $dbc, $query );
+
+                        if ( mysqli_num_rows( $data ) == 1 ) {
+                          // The user row was found so display the user data
+                          $rowB = mysqli_fetch_array($data);
+                        }
+
+                        ?>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col s5">
+                          <div class="signup-box">
+                            <div class="container">
+
+                              <div class="input-field">
+                                <i class="material-icons prefix">description</i>
+                                <select id="cmbValijas" name="cmbValijas" disabled>
+                                  <?php
+                                    $query = "SELECT ctas_valijas.id_valija AS id_valija2, 
+                                                ctas_valijas.delegacion AS num_del, 
+                                                ctas_delegaciones.descripcion AS delegacion_descripcion, 
+                                                ctas_valijas.num_oficio_del,
+                                                ctas_valijas.num_oficio_ca, 
+                                                ctas_valijas.user_id
+                                              FROM ctas_valijas, ctas_delegaciones 
+                                              WHERE ctas_valijas.delegacion = ctas_delegaciones.delegacion 
+                                              AND ctas_valijas.id_valija = " . $rowB['id_valija'];
+                                    $result = mysqli_query( $dbc, $query );
+                                    while ( $row2 = mysqli_fetch_array( $result ) )
+                                      echo '<option value="' . $row2['id_valija2'] . '" selected>' . $row2['num_oficio_ca'] . ': ' . $row2['num_del'] . '-' . $row2['delegacion_descripcion'] . '</option>';
+                                  ?>
+                                </select>
+                                <label>Número de Valija/Oficio</label>
+                              </div>
+
+                              <label for="fecha_solicitud_del">Fecha solicitud:</label>
+                              <div class="input-field">
+                                <i class="material-icons prefix">today</i>
+                                <input disabled type="text" id="fecha_solicitud_del" name="fecha_solicitud_del" value="<?php if ( !empty( $rowB['fecha_solicitud_del'] ) ) echo $rowB['fecha_solicitud_del']; ?>"/>
+                              </div>
+
+                              <div class="input-field">
+                                <i class="material-icons prefix">view_list</i>
+                                <select disabled id="cmbtipomovimiento" name="cmbtipomovimiento">
+                                  <?php
+                                    $query = "SELECT * 
+                                              FROM ctas_movimientos
+                                              WHERE id_movimiento = " . $rowB['id_movimiento'];
+                                    $result = mysqli_query( $dbc, $query );
+                                    while ( $row2 = mysqli_fetch_array( $result ) )
+                                      echo '<option value="' . $row2['id_movimiento'] . '" ' . fntipomovimientoSelect( $row2['id_movimiento'] ) . '>' . $row2['descripcion'] . '</option>';
+                                  ?>
+                                </select>
+                                <label for="cmbtipomovimiento">Tipo de Movimiento</label>
+                              </div>
+
+                              <div class="input-field">
+                                <i class="large material-icons prefix">business</i>
+                                <select disabled id="cmbDelegaciones" name="cmbDelegaciones" >
+                                  <?php
+                                    $query = "SELECT * 
+                                              FROM ctas_delegaciones 
+                                              WHERE delegacion = " . $rowB['delegacion'];
+                                    $result = mysqli_query( $dbc, $query );
+                                    while ( $row2 = mysqli_fetch_array( $result ) )
+                                      echo '<option value="' . $row2['delegacion'] . '" selected>' . $row2['delegacion'] . ' - ' . $row2['descripcion'] . '</option>';
+                                  ?>
+                                </select>
+                                <label>Delegación IMSS</label>
+                              </div>
+
+                              <div class="input-field">
+                                <i class="material-icons prefix">store</i>
+                                <select disabled class="active validate" id="cmbSubdelegaciones" name="cmbSubdelegaciones" >
+                                  <?php
+                                    $query = "SELECT * 
+                                              FROM ctas_subdelegaciones 
+                                              WHERE delegacion = " . $rowB['delegacion'] . " AND subdelegacion = " . $rowB['subdelegacion'];
+                                    $result = mysqli_query( $dbc, $query );
+                                    while ( $row2 = mysqli_fetch_array( $result ) )
+                                      echo '<option value="' . $row2['subdelegacion'] . '" selected>' . $row2['subdelegacion'] . ' - ' . $row2['descripcion'] . '</option>';
+                                  ?>
+                                </select>
+                              </div>
+
+                              <div class="input-field">
+                                <i class="material-icons prefix">perm_identity</i>
+                                <input disabled type="text" class="active validate" name="primer_apellido" id="primer_apellido" length="32" value="<?php if ( !empty( $rowB['primer_apellido'] ) ) echo $rowB['primer_apellido']; ?>"/>
+                                <label data-error="Error" for="primer_apellido">Primer apellido</label>
+                              </div>
+
+                              <div class="input-field">
+                                <i class="material-icons prefix">perm_identity</i>
+                                <input disabled type="text" class="active validate" name="segundo_apellido" id="segundo_apellido" length="32" value="<?php if ( !empty( $rowB['segundo_apellido'] ) ) echo $rowB['segundo_apellido']; ?>"/>
+                                <label data-error="Error" for="segundo_apellido">Segundo apellido</label>
+                              </div>
+
+                              <div class="input-field">
+                                <i class="material-icons prefix">perm_identity</i>
+                                <input disabled type="text" required class="active validate" name="nombre" id="nombre" length="32" value="<?php if ( !empty( $rowB['nombre'] ) ) echo $rowB['nombre']; ?>"/>
+                                <label data-error="Error" for="nombre">Nombre(s)</label>
+                              </div>
+
+                              <div class="input-field">
+                                <i class="material-icons prefix">assignment_ind</i>
+                                <input disabled type="text" required class="active validate" name="matricula" id="matricula" length="32" value='<?php if ( !empty( $rowB['matricula'] ) ) echo $rowB['matricula']; ?>'/>
+                                <label data-error="Error" for="matricula">Matrícula</label>
+                              </div>
+
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col s5">
+                          <div class="signup-box">
+                            <div class="container">
+
+
+                              <div class="input-field">
+                                <i class="material-icons prefix">account_circle</i>
+                                <input disabled type="text" required class="active validate" name="curp" id="curp" length="18" value="<?php if ( !empty( $rowB['curp'] ) ) echo $rowB['curp']; ?>" />
+                                <label data-error="Error" for="curp">CURP</label>
+                              </div>
+
+                              <div class="input-field">
+                                <i class="material-icons prefix">assignment</i>
+                                <input disabled type="text" required class="active validate" name="usuario" id="usuario" length="7" value="<?php if ( !empty( $rowB['usuario'] ) ) echo $rowB['usuario']; ?>" />
+                                <label data-error="Error" for="usuario">Usuario</label>
+                              </div>
+
+                              <div class="input-field">
+                                <i class="material-icons prefix">label_outline</i>
+                                <select disabled id="cmbgpoactual" class="active validate" name="cmbgpoactual" >
+                                  <?php
+                                    $query = "SELECT * 
+                                              FROM ctas_grupos 
+                                              WHERE id_grupo = " . $rowB['id_grupo_actual'];
+                                    $result = mysqli_query( $dbc, $query );
+                                    while ( $row2 = mysqli_fetch_array( $result ) )
+                                      echo '<option value="' . $row2['id_grupo'] . '" selected>' . $row2['descripcion'] . '</option>';
+                                  ?>
+                                </select>
+                                <label>Grupo Actual</label>
+                              </div>
+
+                              <div class="input-field">
+                                <i class="material-icons prefix">label</i>
+                                <select disabled id="cmbgponuevo" name="cmbgponuevo" >
+                                  <?php
+                                    $query = "SELECT * 
+                                              FROM ctas_grupos 
+                                              WHERE id_grupo = " . $rowB['id_grupo_nuevo'];
+                                    $result = mysqli_query( $dbc, $query );
+                                    while ( $row2 = mysqli_fetch_array( $result ) )
+                                      echo '<option value="' . $row2['id_grupo'] . '" selected>' . $row2['descripcion'] . '</option>';
+                                  ?>
+                                </select>
+                                <label>Grupo Nuevo</label>
+                              </div>
+
+                              <div class="input-field">
+                                <i class="material-icons prefix">report_problem</i>
+                                <select disabled id="cmbcausarechazo" name="cmbcausarechazo" >
+                                  <?php
+                                    $query = "SELECT * 
+                                              FROM ctas_causasrechazo
+                                              WHERE id_causarechazo = " . $rowB['id_causarechazo'];
+                                    $result = mysqli_query( $dbc, $query );
+                                    while ( $row2 = mysqli_fetch_array( $result ) )
+                                      echo '<option value="' . $row2['id_causarechazo'] . '" selected>' . $row2['id_causarechazo'] . ' - ' . $row2['descripcion'] . '</option>';
+                                  ?>
+                                </select>
+                                <label>Causa de Rechazo</label>
+                              </div>
+                                  
+                              <div class="input-field">
+                                <i class="material-icons prefix">comment</i>
+                                <textarea disabled class="materialize-textarea" class="validate" id="comentario" length="256" name="comentario"><?php if ( !empty( $rowB['comentario'] ) ) echo $rowB['comentario']; ?></textarea>
+                                <label data-error="Error" for="comentario">Comentario</label>
+                              </div>
+
+                              <div>
+                                <i class="material-icons prefix">description</i>
+                                <label data-error="Error" for="usuario">Archivo</label>
+                                <div class="section" align="right">
+                                  <?php 
+                                    if ( !empty( $rowB['archivo'] ) ) 
+                                      echo '<a href="' . MM_UPLOADPATH_CTASSINDO . '\\' . $rowB['archivo'] . '"  target="_new">' . $rowB['archivo'] . '</a>';
+                                    else echo '(Vacío)';
+                                  ?>
+                                </div>
+                              </div>
+
+                              <div class="input-field">
+                                <i class="material-icons prefix">contact</i>
+                                <input disabled type="text" required class="active validate" name="user_id" id="user_id" length="50" value="<?php if ( !empty( $rowB['creada_por'] ) ) echo $rowB['creada_por']; ?>" />
+                                <label data-error="Error" for="user_id">Capturada por:</label>
+                              </div>
+
+                              <label for="fecha_modificacion">Fecha Modificación:</label>
+                              <div class="input-field">
+                                <i class="material-icons prefix">today</i>
+                                <input disabled type="text" id="fecha_modificacion" name="fecha_modificacion" value="<?php if ( !empty( $rowB['fecha_modificacion'] ) ) echo $rowB['fecha_modificacion']; ?>"/>
+                              </div>
+
+                            </div>
+                          </div>
+                        </div>
+
+                      <?php
                       }
                       else {
                         echo '<p class="error"><strong>La nueva solicitud no ha podido generarse. Contactar al administrador.</strong></p>';
                       }
 
-                      echo '<p class="titulo2">Puede agregar una <a href="agregarsolicitud.php">nueva solicitud</a></p>';
-                      /*echo '<p class="titulo2">Agregar <a href="agregarvalija.php">nueva valija</a></p>';*/
-                      echo '<p>O puede regresar al <a href="indexCuentasSINDO.php">inicio</a></p>';
                       // Clear the score data to clear the form
                       $_POST['cmbLote']    = 0;
                       $_POST['cmbValijas'] = 0;
@@ -284,7 +506,7 @@
 
           }
           else {
-            echo '<p class="nota"><strong>Captura todos los datos de la solcitud.</strong></p>';
+            echo '<p class="nota"><strong>Captura todos los datos de la solicitud.</strong></p>';
           }
 
           ?>
@@ -293,33 +515,17 @@
         </div>
       </div>
 
+
     <?php
       if ( $output_form == 'yes' ) {
     ?>
         <form class="signup-form" method="post" enctype="multipart/form-data" action="<?php echo $_SERVER['PHP_SELF']; ?>">
-
+        
           <div class="col s5">
             <div class="signup-box">
               <div class="container">
 
-                <!-- <div class="input-field">
-                  <i class="material-icons prefix">view_quilt</i>
-                  <select id="cmbLotes" name="cmbLotes">
-                    <option value="0">Seleccione # de Lote</option>
-                  <?php
-                    /*$query = "SELECT * 
-                                  FROM ctas_lotes 
-                                  WHERE user_id = " . $_SESSION['user_id'] . 
-                                  " ORDER BY fecha_modificacion DESC;";
-                        $result = mysqli_query($dbc, $query);
-                        while ( $row = mysqli_fetch_array( $result ) )
-                            echo '<option value="' . $row['id_lote'] . '" ' . fnloteSelect( $row['id_lote'] ) . '>' . $row['lote_anio'] . '</option>';*/
-                      ?>
-                  </select>
-                  <label>Número de Lote</label>
-                </div> -->
-
-                <div class="input-field">
+        
                   <i class="material-icons prefix">description</i>
                   <select id="cmbValijas" name="cmbValijas">
                     <option value="0">Seleccione # de Valija/Oficio</option>
@@ -332,21 +538,20 @@
                                   ctas_valijas.user_id
                                 FROM ctas_valijas, ctas_delegaciones 
                                 WHERE ctas_valijas.delegacion = ctas_delegaciones.delegacion
-                                ORDER BY ctas_valijas.id_valija DESC";
+                                AND   YEAR(ctas_valijas.fecha_recepcion_ca) = 2017 
+                                ORDER BY ctas_valijas.id_valija ";
                       $result = mysqli_query( $dbc, $query );
                       while ( $row = mysqli_fetch_array( $result ) )
                         echo '<option value="' . $row['id_valija'] . '" ' . fnvalijaSelect( $row['id_valija'] ) . '>' . $row['num_oficio_ca'] . ': ' . $row['num_del'] . '-' . $row['delegacion_descripcion'] . '</option>';
                     ?>
                   </select>
                   <label>Número de Valija/Oficio</label>
-                </div>
+                <!-- </div> -->
 
                 <label for="fecha_solicitud_del">Fecha solicitud:</label>
                 <div class="input-field">
                   <i class="material-icons prefix">today</i>
                   <input type="date" id="fecha_solicitud_del" name="fecha_solicitud_del" value="<?php if (!empty($fecha_solicitud_del)) echo $fecha_solicitud_del; ?>" /><br />
-
-                  <!-- <label data-error="Error" for="fecha_solicitud_del">Fecha de la Solicitud</label> -->
                 </div>
 
                 <div class="input-field">
@@ -414,11 +619,6 @@
                   <label data-error="Error" for="nombre">Nombre(s)</label>
                 </div>
 
-                <div class="input-field">
-                  <i class="material-icons prefix">assignment_ind</i>
-                  <input type="text" required class="active validate" name="matricula" id="matricula" length="32" value='<?php if ( !empty( $matricula ) ) echo $matricula; ?>'/>
-                  <label data-error="Error" for="matricula">Matrícula</label>
-                </div>
 
               </div>
             </div>
@@ -428,13 +628,16 @@
             <div class="signup-box">
               <div class="container">
 
+                <div class="input-field">
+                  <i class="material-icons prefix">assignment_ind</i>
+                  <input type="text" required class="active validate" name="matricula" id="matricula" length="32" value='<?php if ( !empty( $matricula ) ) echo $matricula; ?>'/>
+                  <label data-error="Error" for="matricula">Matrícula</label>
+                </div>
 
                 <div class="input-field">
-                  <!-- <div class="section"> -->
                     <i class="material-icons prefix">account_circle</i>
                     <input type="text" required class="active validate" name="curp" id="curp" length="18" value="<?php if ( !empty( $curp ) ) echo $curp; ?>" />
                     <label data-error="Error" for="curp">CURP</label>
-                  <!-- </div> -->
                 </div>
 
                 <div class="input-field">
@@ -475,6 +678,7 @@
                   <label>Grupo Nuevo</label>
                 </div>
 
+
                 <div class="input-field">
                   <i class="material-icons prefix">report_problem</i>
                   <select id="cmbcausarechazo" name="cmbcausarechazo">
@@ -482,12 +686,18 @@
                     <?php
                       $result = mysqli_query( $dbc, "SELECT * 
                                                       FROM ctas_causasrechazo
+                                                      WHERE id_causarechazo <> -1
                                                       ORDER BY id_causarechazo ASC" );
                       while ( $row = mysqli_fetch_array( $result ) )
                         echo '<option value="' . $row['id_causarechazo'] . '" ' . fntcmbcausarechazoSelect( $row['id_causarechazo'] ) .'>' . $row['id_causarechazo'] . ' - ' . $row['descripcion'] . '</option>';
                     ?>
                   </select>
                   <label>Causa de Rechazo</label>
+
+                <!-- <?php
+                /*  echo $row['id_causarechazo'];
+                  echo fntcmbcausarechazoSelect( $row['id_causarechazo'] );*/
+                ?> -->
                 </div>
                     
                 <div class="input-field">

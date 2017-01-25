@@ -44,7 +44,9 @@
           <div class="icon-block">
             <h2 class="center light-blue-text"><i class="material-icons">supervisor_account</i></h2>
             <h5 class="center">Capturar/Crear</h5>
-            <p class="light"><a href="agregarlote.php">Crea un nuevo lote</a>, agrega <a href="agregarvalija.php">nuevas valijas/oficios</a> o captura las <a href="agregarsolicitud.php">nuevas solicitudes</a> de ALTA, BAJA y CAMBIO asociadas a cada valija.</p>
+            <p class="light"><a href="">Crea un nuevo lote</a>, agrega <a href="">nuevas valijas/oficios.</a></p>
+            <p class="light">Captura las <a href="agregarsolicitud.php">nuevas solicitudes</a> de ALTA, BAJA y CAMBIO.</p>
+            <p class="light">También puedes ver un <a href="verDetalleCuentasSINDO.php">resumen de las solicitudes capturadas.</a></p>
           </div>
         </div>
 

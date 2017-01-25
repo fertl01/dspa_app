@@ -86,7 +86,7 @@
 
   function fntcmbcausarechazoSelect($var_causarechazo)
   {
-    if ( empty( $_POST['cmbcausarechazo'] ) )
+    if ( empty( $_POST['cmbcausarechazo'] ) && $_POST['cmbcausarechazo'] <> 0 )
       return "";
     else if ( $_POST['cmbcausarechazo'] == $var_causarechazo )
       return "selected";
