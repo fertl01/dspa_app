@@ -1,0 +1,286 @@
+body {
+  font-family: 'Montserrat', sans-serif;
+  margin: 0;
+}
+
+table {
+  width: 100%;
+}
+
+th, tr {
+  background: #273b47;
+  color: white;
+}
+
+th {
+  padding: 10px 20px;
+  text-align: center;
+}
+
+td {
+  padding: 20px;
+}
+
+table, td, th {
+  border: 1px solid #273b47;
+  border-collapse: collapse;
+}
+
+input, textarea {
+  outline: 0;
+}
+
+input:focus, textarea:focus {
+  background: lightgray;
+}
+
+.contenedor {
+  width: 800px;
+  margin: auto;  
+  position: relative;
+}
+
+.background {
+  /*background-image: url('../images/centromedico.jpg');*/
+  /*background-color: #df7c00;*/
+  /*background-color: #600000;*/
+  background-color: #cc0000;
+  background-size: cover;
+}
+
+.button {
+  border-radius: 12px;
+  border: none;
+  color: white;
+  padding: 7px 12px;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 18px;
+  background: #fd324e;
+  background: linear-gradient(to left, #ff7250, #cc0000);
+}
+
+.titulo {
+  font-family: 'Courgette', sans-serif;
+  /*color: blue;*/
+  color: rgb(175, 31, 36); /*Ironman colors*/
+  font-size: 70px;
+  margin-bottom: 0;
+  margin-top: 10px;
+}
+
+.titulo span {
+  text-decoration: underline;
+}
+
+.title-a {
+  color: white;
+	font-size: 24px;
+  margin-top: 0;
+}
+
+.title-b {
+	font-size: 50px;
+  margin-bottom: 20px;
+  margin-top: 15px;
+}
+
+.title-c {
+  font-size: 50px;
+  margin-bottom: 20px;
+  margin-top: 15px;
+}
+
+.inventarios {
+  color: #1F313C;
+  margin-bottom: 60px;
+}
+
+.inventarios h2 {
+  font-family: 'Montserrat', sans-serif;
+	font-size: 35px;
+}
+
+.portada {
+	color: blue;
+  padding: 20px;
+  height: 420px;
+}
+
+
+.portada button {
+  margin-bottom: 70px;
+}
+
+.menu {
+  font-size: 24px;
+  display: inline-block;
+  position: absolute;
+  right: 0;
+}
+
+.menu li {
+  display: inline-block;
+  margin-left: 30px;
+}
+
+.menu li:before{
+  /*content: '∘';*/
+  font-size: 25px;
+  line-height: 20px;
+  /*color: #df7c00;*/
+  color: white;
+  /*color: #ffa700;*/
+}
+
+.menu a {
+  color: white;
+  text-decoration: none;
+}
+
+a {
+  color: blue;
+  text-decoration: none;
+}
+
+.logotipo {
+  width: 152px;
+  height: 152px;
+  display: inline-block;
+  margin-left: 0;
+  /*background-color: #fafafa;*/
+  /*border-radius: 50%;*/
+  /*border: 1px solid #dbdbdb;*/
+  box-sizing: border-box;
+  overflow: hidden;
+  position: relative;
+}
+
+.detalleinventario {
+  margin: 10px 10px 40px 10px;
+  padding: 10px;
+  /*overflow: hidden;*/
+  border: 1px solid #1F313C;
+  border-radius: 8px;
+}
+
+.detalleinventario ol {
+  padding: 0;
+}
+
+.detalleinventario-b {
+  height: 190px;
+}
+
+.derecha {
+  float: right;
+  position: relative;
+  top: 15px;
+}
+
+.derecha2 {
+  float: right;
+  position: relative;
+  top: 52px;
+}
+
+.izquierda {
+  float: left;
+  position: relative;
+}
+
+.contenedor-detalleinventario-a {
+  padding-left: 20px;
+  padding-bottom: 20px;
+}
+
+.contenedor-detalleinventario-b {
+  margin-left: 350px;
+  position: relative;
+  bottom: 40px;
+}
+
+.header {
+  background-color: ;
+  padding: 0px 10px;
+}
+
+.header .contenedor {
+  display: flex;
+  margin: auto;
+  position: relative;
+  justify-content: space-between;
+}
+
+.footer {
+  background: #ffa700;
+  padding: 0px 10px;
+}
+
+.contacto {
+  display: flex;
+  width: 300px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.contacto img {
+  display: block;
+}
+
+.contacto strong {
+  display: block;
+}
+
+.contacto a {
+  color: white;
+  text-decoration: none;
+  margin: 10px 10px 10px 0;
+}
+
+.footer .contenedor {
+  display: flex;
+  width: 900px;
+  margin: auto;
+  position: relative;
+  justify-content: space-between;
+}
+
+.formulario {
+  display: flex;
+  width: 400px;
+  color: blue;
+}
+
+.col1, .col2 {
+  display: flex;
+  flex-direction: column;
+}
+
+.col1 {
+  margin-right: 15px;
+}
+
+.col2 {
+  align-items: flex-start;
+}
+
+.col2 .button {
+  margin-top: 15px;
+}
+
+.intereses label {
+  font-size: 12px;
+}
+
+.formulario label, .sexo, .intereses {
+  margin-bottom: 10px;
+}
+
+.sexo {
+  margin-top: 10px;
+}
+
+.tabla {
+  margin: 50px 0;
+}
